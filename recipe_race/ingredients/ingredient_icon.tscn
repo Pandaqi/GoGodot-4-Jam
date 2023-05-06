@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://b03v5apmy5ytx"]
+
+[ext_resource type="Texture2D" uid="uid://j2ady2i8wyvt" path="res://recipe_race/ingredients/ingredient_icons.webp" id="1_c4agu"]
+
+[node name="IngredientIcon" type="Sprite2D"]
+texture = ExtResource("1_c4agu")
+hframes = 8

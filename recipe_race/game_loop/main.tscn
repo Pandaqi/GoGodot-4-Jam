@@ -1,0 +1,140 @@
+[gd_scene load_steps=23 format=3 uid="uid://bs83cu21upwee"]
+
+[ext_resource type="Script" path="res://recipe_race/game_loop/main.gd" id="1_goj4h"]
+[ext_resource type="Script" path="res://recipe_race/player/player.gd" id="1_i0a2w"]
+[ext_resource type="Script" path="res://recipe_race/ingredients/ingredients.gd" id="2_81m05"]
+[ext_resource type="Script" path="res://recipe_race/maps/map.gd" id="3_0b0vs"]
+[ext_resource type="PackedScene" uid="uid://djg8658g8ijpx" path="res://recipe_race/tools/random_timer/random_timer.tscn" id="3_2iyes"]
+[ext_resource type="Script" path="res://recipe_race/player/backpack/backpack.gd" id="3_64b6c"]
+[ext_resource type="Script" path="res://recipe_race/player/level_wrapper/level_wrapper.gd" id="4_ols8x"]
+[ext_resource type="Script" path="res://recipe_race/player/visuals/visuals.gd" id="4_snok6"]
+[ext_resource type="PackedScene" uid="uid://l24hxg68y6iu" path="res://recipe_race/ingredients/ingredient_list.tscn" id="5_a11cx"]
+[ext_resource type="Script" path="res://recipe_race/player/potion/potion.gd" id="5_oyor0"]
+[ext_resource type="PackedScene" uid="uid://5lvjvbxmbbir" path="res://recipe_race/maps/boundaries/boundary.tscn" id="6_yx780"]
+[ext_resource type="PackedScene" uid="uid://b4r3j8kl04wv6" path="res://recipe_race/cauldrons/cauldron.tscn" id="8_4l0ft"]
+[ext_resource type="Script" path="res://recipe_race/player/input_tracker/input_tracker.gd" id="8_heb3v"]
+[ext_resource type="Script" path="res://recipe_race/global_systems/global_systems.gd" id="14_v8scp"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wt2gk"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_4jric"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6xxjc"]
+albedo_color = Color(1, 0, 0.113725, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_h06cm"]
+radius = 0.25
+height = 0.5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_w0ksv"]
+size = Vector3(50, 5, 30)
+
+[sub_resource type="BoxMesh" id="BoxMesh_nx34a"]
+size = Vector3(50, 5, 30)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v4uxx"]
+albedo_color = Color(0.156863, 1, 0.317647, 1)
+
+[sub_resource type="Environment" id="Environment_lhbeu"]
+ambient_light_color = Color(0.34902, 0.521569, 0.611765, 1)
+ambient_light_energy = 2.0
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_goj4h")
+
+[node name="Player" type="CharacterBody3D" parent="." groups=["Players"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+script = ExtResource("1_i0a2w")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+shape = SubResource("CapsuleShape3D_wt2gk")
+
+[node name="Backpack" type="Node3D" parent="Player"]
+script = ExtResource("3_64b6c")
+
+[node name="Visuals" type="Node3D" parent="Player"]
+script = ExtResource("4_snok6")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player/Visuals"]
+mesh = SubResource("CapsuleMesh_4jric")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_6xxjc")
+
+[node name="Eyes" type="MeshInstance3D" parent="Player/Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.630604, -0.504383)
+mesh = SubResource("SphereMesh_h06cm")
+skeleton = NodePath("../../..")
+
+[node name="IngredientList" parent="Player/Visuals" instance=ExtResource("5_a11cx")]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Player/Visuals"]
+root_node = NodePath("../../..")
+
+[node name="LevelWrapper" type="Node3D" parent="Player"]
+script = ExtResource("4_ols8x")
+
+[node name="Timer" type="Timer" parent="Player/LevelWrapper"]
+wait_time = 0.15
+one_shot = true
+
+[node name="Potion" type="Node3D" parent="Player"]
+script = ExtResource("5_oyor0")
+
+[node name="InputTracker" type="Node3D" parent="Player"]
+script = ExtResource("8_heb3v")
+
+[node name="Map" type="Node3D" parent="."]
+script = ExtResource("3_0b0vs")
+
+[node name="Floor" type="StaticBody3D" parent="Map"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Map/Floor"]
+shape = SubResource("BoxShape3D_w0ksv")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Map/Floor"]
+mesh = SubResource("BoxMesh_nx34a")
+surface_material_override/0 = SubResource("StandardMaterial3D_v4uxx")
+
+[node name="BoundaryBottom" parent="Map" node_paths=PackedStringArray("other_side") instance=ExtResource("6_yx780")]
+other_side = NodePath("../BoundaryTop")
+vec = Vector3(0, 0, 1)
+
+[node name="BoundaryTop" parent="Map" node_paths=PackedStringArray("other_side") instance=ExtResource("6_yx780")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 14.8133)
+other_side = NodePath("../BoundaryBottom")
+
+[node name="BoundaryLeft" parent="Map" node_paths=PackedStringArray("other_side") instance=ExtResource("6_yx780")]
+transform = Transform3D(-2.18557e-07, 0, 1, 0, 1, 0, -1, 0, -2.18557e-07, -24.8988, 0, -3.53317)
+other_side = NodePath("../BoundaryRight")
+vec = Vector3(1, 0, 0)
+
+[node name="BoundaryRight" parent="Map" node_paths=PackedStringArray("other_side") instance=ExtResource("6_yx780")]
+transform = Transform3D(3.25841e-07, 0, -1, 0, 1, 0, 1, 0, 3.25841e-07, 24.9632, 0, -0.030098)
+other_side = NodePath("../BoundaryLeft")
+vec = Vector3(-1, 0, 0)
+
+[node name="Cauldron" parent="Map" groups=["Cauldrons"] instance=ExtResource("8_4l0ft")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 2, 0)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-1, 7.92319e-08, -3.69465e-08, 0, 0.422618, 0.906308, 8.74228e-08, 0.906308, -0.422618, 0, 49.4333, -21.0602)
+environment = SubResource("Environment_lhbeu")
+fov = 40.0
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.555996, 0.723503, -0.409161, -0.438512, 0.162854, 0.883847, 0.7061, 0.670837, 0.226718, -12.6257, 34.1331, 0)
+light_color = Color(1, 0.905882, 0.639216, 1)
+shadow_enabled = true
+
+[node name="Ingredients" type="Node3D" parent="."]
+script = ExtResource("2_81m05")
+
+[node name="RandomTimer" parent="Ingredients" instance=ExtResource("3_2iyes")]
+
+[node name="GlobalSystems" type="Node3D" parent="."]
+script = ExtResource("14_v8scp")
+
+[node name="InputTrackTimer" type="Timer" parent="GlobalSystems"]
+
+[connection signal="timeout" from="Player/LevelWrapper/Timer" to="Player/LevelWrapper" method="_on_timer_timeout"]
+[connection signal="timeout" from="GlobalSystems/InputTrackTimer" to="GlobalSystems" method="_on_input_track_timer_timeout"]

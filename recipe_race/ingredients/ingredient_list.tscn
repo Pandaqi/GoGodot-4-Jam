@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://l24hxg68y6iu"]
+
+[ext_resource type="Script" path="res://recipe_race/ingredients/ingredient_list.gd" id="1_mynvj"]
+
+[node name="IngredientList" type="Node2D"]
+script = ExtResource("1_mynvj")
+
+[node name="Container" type="Node2D" parent="."]

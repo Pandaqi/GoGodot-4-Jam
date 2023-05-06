@@ -1,0 +1,146 @@
+[gd_scene load_steps=12 format=3 uid="uid://3irpf20tcbcq"]
+
+[ext_resource type="Script" path="res://recipe_race/ingredients/ingredient.gd" id="1_6hqok"]
+[ext_resource type="Script" path="res://recipe_race/ingredients/AI.gd" id="2_106v5"]
+[ext_resource type="Script" path="res://recipe_race/ingredients/visuals.gd" id="2_a3m8k"]
+[ext_resource type="PackedScene" uid="uid://djg8658g8ijpx" path="res://recipe_race/tools/random_timer/random_timer.tscn" id="3_0xjit"]
+[ext_resource type="Script" path="res://recipe_race/ingredients/mover.gd" id="5_nrbq5"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_tvvsg"]
+
+[sub_resource type="Animation" id="Animation_38xy2"]
+resource_name = "jump_prepare"
+length = 1.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(1, 1, 1), Vector3(1.2, 1.2, 1.2), Vector3(1, 1, 1), Vector3(1.2, 1.2, 1.2), Vector3(1, 1, 1), Vector3(1.2, 1.2, 1.2), Vector3(1, 1, 1), Vector3(1.2, 1.2, 1.2)]
+}
+
+[sub_resource type="Animation" id="Animation_d6fwb"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MeshContainer:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("MeshContainer:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_cbq88"]
+resource_name = "appear"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(1, 1.6, 1), Vector3(1.3, 0.8, 1.3), Vector3(0.9, 1.3, 0.9), Vector3(1.1, 0.9, 1.1), Vector3(1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MeshContainer:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 1.5, 0), Vector3(0, 0, 0), Vector3(0, 0.8, 0), Vector3(0, 0, 0), Vector3(0, 0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("MeshContainer:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.8),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 6.28319, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_hrl0j"]
+_data = {
+"RESET": SubResource("Animation_d6fwb"),
+"appear": SubResource("Animation_cbq88"),
+"jump_prepare": SubResource("Animation_38xy2")
+}
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_bcod6"]
+radius = 0.75
+
+[node name="Ingredient" type="Node3D" groups=["Ingredients"]]
+script = ExtResource("1_6hqok")
+
+[node name="Visuals" type="Node3D" parent="."]
+script = ExtResource("2_a3m8k")
+
+[node name="MeshContainer" type="Node3D" parent="Visuals"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Visuals/MeshContainer"]
+mesh = SubResource("SphereMesh_tvvsg")
+skeleton = NodePath("../../..")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Visuals"]
+libraries = {
+"": SubResource("AnimationLibrary_hrl0j")
+}
+
+[node name="Area3D" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+shape = SubResource("SphereShape3D_bcod6")
+
+[node name="AI" type="Node3D" parent="."]
+script = ExtResource("2_106v5")
+
+[node name="RandomTimer" parent="AI" instance=ExtResource("3_0xjit")]
+
+[node name="Mover" type="Node3D" parent="."]
+script = ExtResource("5_nrbq5")
+
+[connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]
+[connection signal="body_exited" from="Area3D" to="." method="_on_area_3d_body_exited"]

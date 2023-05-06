@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://djg8658g8ijpx"]
+
+[ext_resource type="Script" path="res://recipe_race/tools/random_timer/random_timer.gd" id="1_0qq60"]
+
+[node name="RandomTimer" type="Node"]
+script = ExtResource("1_0qq60")
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
