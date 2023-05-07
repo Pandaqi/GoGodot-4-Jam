@@ -6,15 +6,20 @@ extends Node3D
 var model_copy
 var boundaries = []
 var allow_teleport = true
+var active : bool = false
 
 func activate():
 	cache_model()
+	active = true
+	body.add_to_group("LevelWrappers")
 
 func cache_model():
-	model_copy = body.get_mod("visuals").duplicate(true)
+	model_copy = get_original_visuals().duplicate(true)
 	self.add_child(model_copy)
 
-func _physics_process(delta):
+func _physics_process(dt):
+	if not active: return
+	
 	mirror_original_model()
 	if not overlapping_boundary(): return
 	place_copy_at_other_boundary()

@@ -1,0 +1,33 @@
+[remap]
+
+importer="font_data_dynamic"
+type="FontFile"
+uid="uid://dpo8ipa5fwtdo"
+path="res://.godot/imported/Curly Witch.ttf-e9fc26aa216985b7eaacdf40ccbc0d01.fontdata"
+
+[deps]
+
+source_file="res://non_game/fonts/curly_witch/Curly Witch.ttf"
+dest_files=["res://.godot/imported/Curly Witch.ttf-e9fc26aa216985b7eaacdf40ccbc0d01.fontdata"]
+
+[params]
+
+Rendering=null
+antialiasing=1
+generate_mipmaps=false
+multichannel_signed_distance_field=false
+msdf_pixel_range=8
+msdf_size=48
+allow_system_fallback=true
+force_autohinter=false
+hinting=1
+subpixel_positioning=1
+oversampling=0.0
+Fallbacks=null
+fallbacks=[]
+Compress=null
+compress=true
+preload=[]
+language_support={}
+script_support={}
+opentype_features={}

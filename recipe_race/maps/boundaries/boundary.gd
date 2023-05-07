@@ -6,10 +6,22 @@ extends Area3D
 func get_vector_to_other_side():
 	return vec.abs() * (other_side.transform.origin - self.transform.origin)
 
-func _on_body_entered(body):
-	if not body.is_in_group("Players"): return
+func on_enter(body):
+	if not body.is_in_group("LevelWrappers"): return
 	body.get_mod("level_wrapper").register_boundary(self)
 
-func _on_body_exited(body):
-	if not body.is_in_group("Players"): return
+func on_exit(body):
+	if not body.is_in_group("LevelWrappers"): return
 	body.get_mod("level_wrapper").unregister_boundary(self)
+
+func _on_body_entered(body):
+	on_enter(body)
+
+func _on_body_exited(body):
+	on_exit(body)
+
+func _on_area_entered(area):
+	on_enter(area.get_parent())
+
+func _on_area_exited(area):
+	on_enter(area.get_parent())

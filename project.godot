@@ -19,6 +19,15 @@ config/icon="res://icon.svg"
 
 GDict="*res://recipe_race/game_loop/globals/GDict.gd"
 
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+
+[editor]
+
+movie_writer/movie_file="C:/Users/Tiamo/Documents/Programming/Games/2; Progress/[Jam] GoGodot 4/recordings/recording_7_may.avi"
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"

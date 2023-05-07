@@ -1,19 +1,32 @@
-[gd_scene load_steps=23 format=3 uid="uid://bs83cu21upwee"]
+[gd_scene load_steps=38 format=3 uid="uid://bs83cu21upwee"]
 
 [ext_resource type="Script" path="res://recipe_race/game_loop/main.gd" id="1_goj4h"]
 [ext_resource type="Script" path="res://recipe_race/player/player.gd" id="1_i0a2w"]
 [ext_resource type="Script" path="res://recipe_race/ingredients/ingredients.gd" id="2_81m05"]
+[ext_resource type="Script" path="res://recipe_race/player/players.gd" id="2_nlgl4"]
+[ext_resource type="Script" path="res://recipe_race/progression/progression.gd" id="2_ysw25"]
 [ext_resource type="Script" path="res://recipe_race/maps/map.gd" id="3_0b0vs"]
 [ext_resource type="PackedScene" uid="uid://djg8658g8ijpx" path="res://recipe_race/tools/random_timer/random_timer.tscn" id="3_2iyes"]
 [ext_resource type="Script" path="res://recipe_race/player/backpack/backpack.gd" id="3_64b6c"]
-[ext_resource type="Script" path="res://recipe_race/player/level_wrapper/level_wrapper.gd" id="4_ols8x"]
 [ext_resource type="Script" path="res://recipe_race/player/visuals/visuals.gd" id="4_snok6"]
 [ext_resource type="PackedScene" uid="uid://l24hxg68y6iu" path="res://recipe_race/ingredients/ingredient_list.tscn" id="5_a11cx"]
 [ext_resource type="Script" path="res://recipe_race/player/potion/potion.gd" id="5_oyor0"]
 [ext_resource type="PackedScene" uid="uid://5lvjvbxmbbir" path="res://recipe_race/maps/boundaries/boundary.tscn" id="6_yx780"]
+[ext_resource type="PackedScene" uid="uid://bxto50c0ah3on" path="res://recipe_race/player/level_wrapper/level_wrapper.tscn" id="7_8votx"]
 [ext_resource type="PackedScene" uid="uid://b4r3j8kl04wv6" path="res://recipe_race/cauldrons/cauldron.tscn" id="8_4l0ft"]
 [ext_resource type="Script" path="res://recipe_race/player/input_tracker/input_tracker.gd" id="8_heb3v"]
 [ext_resource type="Script" path="res://recipe_race/global_systems/global_systems.gd" id="14_v8scp"]
+[ext_resource type="Script" path="res://recipe_race/ui/UI.gd" id="15_73d00"]
+[ext_resource type="Script" path="res://recipe_race/global_systems/score/score.gd" id="15_gc0sn"]
+[ext_resource type="Texture2D" uid="uid://nby7b8b5oig4" path="res://recipe_race/ui/ui_bg.webp" id="16_fnu3j"]
+[ext_resource type="Texture2D" uid="uid://bpygvvyj58xia" path="res://recipe_race/ui/input_progress_under.webp" id="17_6ii16"]
+[ext_resource type="Script" path="res://recipe_race/game_over/game_over.gd" id="17_yxe4k"]
+[ext_resource type="Texture2D" uid="uid://dxpvqw5kgrwnb" path="res://recipe_race/ui/input_progress_over.webp" id="18_5wqiw"]
+[ext_resource type="Texture2D" uid="uid://curmfv7tabbha" path="res://recipe_race/ui/input_progress_progress.webp" id="19_vhdri"]
+[ext_resource type="Texture2D" uid="uid://dc2saf7ab15dr" path="res://recipe_race/ui/input_progress_threshold.webp" id="20_6npbb"]
+[ext_resource type="FontFile" uid="uid://d2xmpxhdbextd" path="res://recipe_race/ui/fonts/Curly Witch.ttf" id="21_nkqfm"]
+[ext_resource type="Texture2D" uid="uid://d2ydcqv6j8u8p" path="res://recipe_race/progression/stage_images/tutorial_bg.webp" id="25_nqrqs"]
+[ext_resource type="Texture2D" uid="uid://dfllqqmdcsjgn" path="res://recipe_race/progression/stage_images/tutorial_stage_1.webp" id="26_jvdet"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wt2gk"]
 
@@ -27,10 +40,10 @@ radius = 0.25
 height = 0.5
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_w0ksv"]
-size = Vector3(50, 5, 30)
+size = Vector3(120, 5, 72)
 
 [sub_resource type="BoxMesh" id="BoxMesh_nx34a"]
-size = Vector3(50, 5, 30)
+size = Vector3(60, 5, 36)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v4uxx"]
 albedo_color = Color(0.156863, 1, 0.317647, 1)
@@ -39,48 +52,58 @@ albedo_color = Color(0.156863, 1, 0.317647, 1)
 ambient_light_color = Color(0.34902, 0.521569, 0.611765, 1)
 ambient_light_energy = 2.0
 
+[sub_resource type="LabelSettings" id="LabelSettings_ilp28"]
+font = ExtResource("21_nkqfm")
+font_size = 96
+outline_size = 20
+outline_color = Color(0.109804, 0.109804, 0.109804, 1)
+shadow_size = 15
+shadow_color = Color(0, 0, 0, 0.658824)
+shadow_offset = Vector2(5, 5)
+
+[sub_resource type="LabelSettings" id="LabelSettings_vp8p3"]
+font_size = 48
+
 [node name="Main" type="Node3D"]
 script = ExtResource("1_goj4h")
 
-[node name="Player" type="CharacterBody3D" parent="." groups=["Players"]]
+[node name="Players" type="Node3D" parent="."]
+script = ExtResource("2_nlgl4")
+
+[node name="Player" type="CharacterBody3D" parent="Players" groups=["Players"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
 script = ExtResource("1_i0a2w")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Players/Player"]
 shape = SubResource("CapsuleShape3D_wt2gk")
 
-[node name="Backpack" type="Node3D" parent="Player"]
+[node name="Backpack" type="Node3D" parent="Players/Player"]
 script = ExtResource("3_64b6c")
 
-[node name="Visuals" type="Node3D" parent="Player"]
+[node name="Visuals" type="Node3D" parent="Players/Player"]
 script = ExtResource("4_snok6")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Player/Visuals"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Players/Player/Visuals"]
 mesh = SubResource("CapsuleMesh_4jric")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_6xxjc")
 
-[node name="Eyes" type="MeshInstance3D" parent="Player/Visuals"]
+[node name="Eyes" type="MeshInstance3D" parent="Players/Player/Visuals"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.630604, -0.504383)
 mesh = SubResource("SphereMesh_h06cm")
-skeleton = NodePath("../../..")
+skeleton = NodePath("../../../..")
 
-[node name="IngredientList" parent="Player/Visuals" instance=ExtResource("5_a11cx")]
+[node name="IngredientList" parent="Players/Player/Visuals" instance=ExtResource("5_a11cx")]
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Player/Visuals"]
-root_node = NodePath("../../..")
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Players/Player/Visuals"]
+root_node = NodePath("../../../..")
 
-[node name="LevelWrapper" type="Node3D" parent="Player"]
-script = ExtResource("4_ols8x")
+[node name="LevelWrapper" parent="Players/Player" instance=ExtResource("7_8votx")]
 
-[node name="Timer" type="Timer" parent="Player/LevelWrapper"]
-wait_time = 0.15
-one_shot = true
-
-[node name="Potion" type="Node3D" parent="Player"]
+[node name="Potion" type="Node3D" parent="Players/Player"]
 script = ExtResource("5_oyor0")
 
-[node name="InputTracker" type="Node3D" parent="Player"]
+[node name="InputTracker" type="Node3D" parent="Players/Player"]
 script = ExtResource("8_heb3v")
 
 [node name="Map" type="Node3D" parent="."]
@@ -96,20 +119,21 @@ mesh = SubResource("BoxMesh_nx34a")
 surface_material_override/0 = SubResource("StandardMaterial3D_v4uxx")
 
 [node name="BoundaryBottom" parent="Map" node_paths=PackedStringArray("other_side") instance=ExtResource("6_yx780")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -18.0446)
 other_side = NodePath("../BoundaryTop")
 vec = Vector3(0, 0, 1)
 
 [node name="BoundaryTop" parent="Map" node_paths=PackedStringArray("other_side") instance=ExtResource("6_yx780")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 14.8133)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 18.0221)
 other_side = NodePath("../BoundaryBottom")
 
 [node name="BoundaryLeft" parent="Map" node_paths=PackedStringArray("other_side") instance=ExtResource("6_yx780")]
-transform = Transform3D(-2.18557e-07, 0, 1, 0, 1, 0, -1, 0, -2.18557e-07, -24.8988, 0, -3.53317)
+transform = Transform3D(-2.18557e-07, 0, 1, 0, 1, 0, -1, 0, -2.18557e-07, -29.8988, 0, -3.53317)
 other_side = NodePath("../BoundaryRight")
 vec = Vector3(1, 0, 0)
 
 [node name="BoundaryRight" parent="Map" node_paths=PackedStringArray("other_side") instance=ExtResource("6_yx780")]
-transform = Transform3D(3.25841e-07, 0, -1, 0, 1, 0, 1, 0, 3.25841e-07, 24.9632, 0, -0.030098)
+transform = Transform3D(3.25841e-07, 0, -1, 0, 1, 0, 1, 0, 3.25841e-07, 29.9632, 0, -0.030098)
 other_side = NodePath("../BoundaryLeft")
 vec = Vector3(-1, 0, 0)
 
@@ -117,9 +141,9 @@ vec = Vector3(-1, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 2, 0)
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(-1, 7.92319e-08, -3.69465e-08, 0, 0.422618, 0.906308, 8.74228e-08, 0.906308, -0.422618, 0, 49.4333, -21.0602)
+transform = Transform3D(-1, 7.9232e-08, -3.69464e-08, 0, 0.422618, 0.906308, 8.74228e-08, 0.906308, -0.422618, 0, 90, -40)
 environment = SubResource("Environment_lhbeu")
-fov = 40.0
+fov = 25.0
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.555996, 0.723503, -0.409161, -0.438512, 0.162854, 0.883847, 0.7061, 0.670837, 0.226718, -12.6257, 34.1331, 0)
@@ -131,10 +155,128 @@ script = ExtResource("2_81m05")
 
 [node name="RandomTimer" parent="Ingredients" instance=ExtResource("3_2iyes")]
 
+[node name="TimerAI" parent="Ingredients" instance=ExtResource("3_2iyes")]
+
 [node name="GlobalSystems" type="Node3D" parent="."]
 script = ExtResource("14_v8scp")
 
 [node name="InputTrackTimer" type="Timer" parent="GlobalSystems"]
 
-[connection signal="timeout" from="Player/LevelWrapper/Timer" to="Player/LevelWrapper" method="_on_timer_timeout"]
+[node name="Score" type="Node3D" parent="."]
+script = ExtResource("15_gc0sn")
+
+[node name="AutoTimer" type="Timer" parent="Score"]
+autostart = true
+
+[node name="UI" type="CanvasLayer" parent="."]
+script = ExtResource("15_73d00")
+
+[node name="BG" type="Node2D" parent="UI"]
+
+[node name="Sprite2D" type="Sprite2D" parent="UI/BG"]
+texture = ExtResource("16_fnu3j")
+centered = false
+
+[node name="InputBarContainer" type="Node2D" parent="UI"]
+scale = Vector2(0.8, 0.8)
+
+[node name="InputBar" type="TextureProgressBar" parent="UI/InputBarContainer"]
+custom_minimum_size = Vector2(600, 96)
+offset_left = -480.0
+offset_top = -48.0
+offset_right = 480.0
+offset_bottom = 48.0
+max_value = 1.0
+step = 0.01
+value = 0.5
+texture_under = ExtResource("17_6ii16")
+texture_over = ExtResource("18_5wqiw")
+texture_progress = ExtResource("19_vhdri")
+
+[node name="Sprite2D" type="Sprite2D" parent="UI/InputBarContainer"]
+texture = ExtResource("20_6npbb")
+
+[node name="ScoreContainer" type="Node2D" parent="UI"]
+position = Vector2(182, 100)
+
+[node name="Label" type="Label" parent="UI/ScoreContainer"]
+offset_top = -88.0
+offset_right = 340.0
+offset_bottom = 105.0
+text = "33"
+label_settings = SubResource("LabelSettings_ilp28")
+vertical_alignment = 1
+
+[node name="GameOver" type="CanvasLayer" parent="."]
+process_mode = 3
+script = ExtResource("17_yxe4k")
+
+[node name="Control" type="Control" parent="GameOver"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="GameOver/Control"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -46.0
+offset_top = -13.0
+offset_right = 46.0
+offset_bottom = 13.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Game Over!"
+label_settings = SubResource("LabelSettings_vp8p3")
+
+[node name="Progression" type="CanvasLayer" parent="."]
+process_mode = 3
+script = ExtResource("2_ysw25")
+
+[node name="Control" type="Control" parent="Progression"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="Progression/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.192157, 0.0901961, 0.207843, 0.917647)
+
+[node name="TutorialBG" type="TextureRect" parent="Progression/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("25_nqrqs")
+
+[node name="Tutorial" type="TextureRect" parent="Progression/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("26_jvdet")
+
+[node name="Timer" type="Timer" parent="Progression"]
+one_shot = true
+
 [connection signal="timeout" from="GlobalSystems/InputTrackTimer" to="GlobalSystems" method="_on_input_track_timer_timeout"]
+[connection signal="timeout" from="Score/AutoTimer" to="Score" method="_on_auto_timer_timeout"]
+[connection signal="timeout" from="Progression/Timer" to="Progression" method="_on_timer_timeout"]

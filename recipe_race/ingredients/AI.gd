@@ -18,6 +18,9 @@ func set_active(val):
 	else:
 		rand_timer.stop()
 
+func is_active() -> bool:
+	return active
+
 func on_timeout():
 	body.get_mod("visuals").play_animation("jump_prepare")
 	await body.get_mod("visuals").anim_player.animation_finished

@@ -1,11 +1,15 @@
 extends CharacterBody3D
 
 const SPEED = 10.0
-const ACCEL_SPEED = 20.0
-const DECEL_SPEED = 20.0
-const ROTATE_SPEED = 2*PI
+const ACCEL_SPEED = 50.0
+const DECEL_SPEED = 50.0
+const ROTATE_SPEED = 5*PI
 const JUMP_VELOCITY = 4.5
 
+const MAX_ROTATION_EFFECT_ANGLE = 0.2*PI
+const ROTATION_EFFECT_SPEED = 4.0
+
+@onready var main_node = get_node("/root/Main")
 @onready var modules = {
 	"backpack": $Backpack,
 	"visuals": $Visuals,
@@ -22,7 +26,8 @@ func get_mod(key):
 	print("Module with key " + key + " doesn't exist on the player node")
 	return null
 
-func _ready():
+func activate():
+	main_node.get_mod("progression").connect("state_changed", on_state_changed)
 	get_mod("level_wrapper").activate()
 
 func _physics_process(delta):
@@ -53,6 +58,11 @@ func handle_move(delta):
 	var rotate_dir = Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
 	
 	get_mod("input_tracker").register_input(abs(rotate_dir)*delta)
+	
+	# TODO: should probably move this to Visuals itself
+	var target_rotation_effect = rotate_dir*MAX_ROTATION_EFFECT_ANGLE
+	var factor = ROTATION_EFFECT_SPEED * delta
+	get_mod("visuals").rotation.z = move_toward(get_mod("visuals").rotation.z, target_rotation_effect, factor)
 	
 	var direction = get_forward_vec()
 	var rotate_amount = -rotate_dir * ROTATE_SPEED * delta
@@ -85,4 +95,5 @@ func rotate_to_match_velocity(delta):
 	var point_ahead = transform.origin + cur_vel
 	transform.basis = transform.looking_at(point_ahead).basis
 
-
+func on_state_changed():
+	pass

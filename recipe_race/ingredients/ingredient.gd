@@ -6,10 +6,11 @@ var active : bool = false
 @onready var modules = {
 	"visuals": $Visuals,
 	"ai": $AI,
-	"mover": $Mover
+	"mover": $Mover,
+	"level_wrapper": $LevelWrapper
 }
 
-signal removed
+signal removed(cause)
 
 func get_mod(key):
 	if modules.has(key): return modules[key]
@@ -21,18 +22,34 @@ func _ready():
 	await get_mod("visuals").anim_player.animation_finished
 	
 	active = true
-	
-	# DEBUGGING; ingredients should turn evil randomly, over time, controlled by Ingredients
-	get_mod("ai").set_active(true)
+	get_mod("level_wrapper").activate()
+
+func is_active():
+	return active
 
 func set_type(t):
 	type = t
 	#TODO: update visuals
 
+func on_unaccepted_by(body):
+	var val = GDict.cfg.handle_unaccepted_ingredients
+	
+	if val == "skip": return
+	elif val == "destroy": remove()
+	elif val == "makeai": get_mod("ai").set_active(true)
+	elif val == "repel":
+		get_mod("mover").repel_from(body.get_position())
+
 func _on_area_3d_body_entered(body):
 	if not active: return
 	if not body.is_in_group("Players"): return
-	body.get_mod("backpack").add(self)
+	
+	var data = get_data_representation()
+	if not body.get_mod("backpack").can_accept(data): 
+		on_unaccepted_by(body)
+		return
+	
+	body.get_mod("backpack").add(data)
 	remove()
 
 func _on_area_3d_body_exited(body):
@@ -44,6 +61,9 @@ func get_data_representation():
 		"type": type
 	}
 
-func remove():
+func remove(reason = "player"):
 	queue_free() #TODO: should play a tween or something
-	emit_signal("removed")
+	emit_signal("removed", reason)
+
+func on_state_changed():
+	pass

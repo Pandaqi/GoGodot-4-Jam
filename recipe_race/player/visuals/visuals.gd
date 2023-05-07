@@ -7,4 +7,7 @@ func play_animation(key):
 	anim_player.play(key)
 
 func update_ui(content):
+	if not GDict.cfg.player_has_backpack:
+		ingredient_list.hide()
+		return
 	ingredient_list.visualize(content)

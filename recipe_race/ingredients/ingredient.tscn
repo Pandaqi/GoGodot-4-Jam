@@ -1,28 +1,13 @@
-[gd_scene load_steps=12 format=3 uid="uid://3irpf20tcbcq"]
+[gd_scene load_steps=13 format=3 uid="uid://3irpf20tcbcq"]
 
 [ext_resource type="Script" path="res://recipe_race/ingredients/ingredient.gd" id="1_6hqok"]
 [ext_resource type="Script" path="res://recipe_race/ingredients/AI.gd" id="2_106v5"]
 [ext_resource type="Script" path="res://recipe_race/ingredients/visuals.gd" id="2_a3m8k"]
 [ext_resource type="PackedScene" uid="uid://djg8658g8ijpx" path="res://recipe_race/tools/random_timer/random_timer.tscn" id="3_0xjit"]
 [ext_resource type="Script" path="res://recipe_race/ingredients/mover.gd" id="5_nrbq5"]
+[ext_resource type="PackedScene" uid="uid://bxto50c0ah3on" path="res://recipe_race/player/level_wrapper/level_wrapper.tscn" id="6_m1h57"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_tvvsg"]
-
-[sub_resource type="Animation" id="Animation_38xy2"]
-resource_name = "jump_prepare"
-length = 1.4
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:scale")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
-"update": 0,
-"values": [Vector3(1, 1, 1), Vector3(1.2, 1.2, 1.2), Vector3(1, 1, 1), Vector3(1.2, 1.2, 1.2), Vector3(1, 1, 1), Vector3(1.2, 1.2, 1.2), Vector3(1, 1, 1), Vector3(1.2, 1.2, 1.2)]
-}
 
 [sub_resource type="Animation" id="Animation_d6fwb"]
 length = 0.001
@@ -102,6 +87,22 @@ tracks/2/keys = {
 "values": [Vector3(0, 0, 0), Vector3(0, 6.28319, 0)]
 }
 
+[sub_resource type="Animation" id="Animation_38xy2"]
+resource_name = "jump_prepare"
+length = 1.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.4, 2.6, 2.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(1, 1, 1), Vector3(1.2, 1.2, 1.2), Vector3(1, 1, 1), Vector3(1.2, 1.2, 1.2), Vector3(1, 1, 1), Vector3(1.2, 1.2, 1.2), Vector3(1, 1, 1), Vector3(1.2, 1.2, 1.2), Vector3(1, 1, 1), Vector3(1.2, 1.2, 1.2), Vector3(1, 1, 1), Vector3(1.2, 1.2, 1.2), Vector3(1, 1, 1), Vector3(1.2, 1.2, 1.2), Vector3(1, 1, 1)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_hrl0j"]
 _data = {
 "RESET": SubResource("Animation_d6fwb"),
@@ -134,13 +135,15 @@ libraries = {
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
 shape = SubResource("SphereShape3D_bcod6")
 
+[node name="Mover" type="Node3D" parent="."]
+script = ExtResource("5_nrbq5")
+
 [node name="AI" type="Node3D" parent="."]
 script = ExtResource("2_106v5")
 
 [node name="RandomTimer" parent="AI" instance=ExtResource("3_0xjit")]
 
-[node name="Mover" type="Node3D" parent="."]
-script = ExtResource("5_nrbq5")
+[node name="LevelWrapper" parent="." instance=ExtResource("6_m1h57")]
 
 [connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]
 [connection signal="body_exited" from="Area3D" to="." method="_on_area_3d_body_exited"]
