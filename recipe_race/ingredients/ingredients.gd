@@ -67,6 +67,8 @@ func place_new_ingredient():
 	var rand_pos = map.get_random_valid_position(query_params)
 	ing.set_position(rand_pos)
 	
+	add_child(ing)
+	
 	var rand_type = get_random_ingredient_type()
 	ing.set_type(rand_type)
 	
@@ -74,8 +76,6 @@ func place_new_ingredient():
 	main_node.get_mod("progression").connect("state_changed", ing.on_state_changed)
 	
 	print("Placing new ingredient")
-	
-	add_child(ing)
 
 func on_ingredient_removed(reason):
 	check_ingredients()

@@ -11,18 +11,18 @@ config_version=5
 [application]
 
 config/name="GoGodot 4"
-run/main_scene="res://recipe_race/game_loop/main.tscn"
+run/main_scene="res://less_is_store/game_loop/main.tscn"
 config/features=PackedStringArray("4.0", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]
 
-GDict="*res://recipe_race/game_loop/globals/GDict.gd"
+GDict="*res://less_is_store/game_loop/globals/GDict.gd"
 
 [display]
 
-window/size/viewport_width=1920
-window/size/viewport_height=1080
+window/size/viewport_width=1280
+window/size/viewport_height=720
 
 [editor]
 

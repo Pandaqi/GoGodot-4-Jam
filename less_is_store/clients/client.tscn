@@ -1,0 +1,94 @@
+[gd_scene load_steps=11 format=3 uid="uid://dh1x05uimkvyl"]
+
+[ext_resource type="Texture2D" uid="uid://ytb3b2y6apqc" path="res://icon.svg" id="1_0tjrn"]
+[ext_resource type="Script" path="res://less_is_store/clients/client.gd" id="1_ckolu"]
+[ext_resource type="Script" path="res://less_is_store/clients/path_walker/path_walker.gd" id="2_5v3iy"]
+[ext_resource type="Script" path="res://less_is_store/clients/state/state.gd" id="2_tmndr"]
+[ext_resource type="Script" path="res://less_is_store/clients/backpack/backpack.gd" id="5_cnsla"]
+[ext_resource type="Script" path="res://less_is_store/clients/backpack/ingredient_list.gd" id="6_ek4iu"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_afxei"]
+height = 55.0
+
+[sub_resource type="Animation" id="Animation_6imxw"]
+resource_name = "stunned"
+length = 0.4
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("..:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0.392157)]
+}
+
+[sub_resource type="Animation" id="Animation_a4w2d"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("..:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_poqhq"]
+_data = {
+"RESET": SubResource("Animation_a4w2d"),
+"stunned": SubResource("Animation_6imxw")
+}
+
+[node name="Client" type="CharacterBody2D" groups=["Clients"]]
+collision_mask = 2
+script = ExtResource("1_ckolu")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -10)
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_afxei")
+
+[node name="State" type="Node2D" parent="."]
+script = ExtResource("2_tmndr")
+
+[node name="GrabTimer" type="Timer" parent="State"]
+one_shot = true
+
+[node name="StunTimer" type="Timer" parent="State"]
+one_shot = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="State"]
+libraries = {
+"": SubResource("AnimationLibrary_poqhq")
+}
+
+[node name="Visuals" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Visuals"]
+modulate = Color(1, 0.0431373, 0.133333, 1)
+position = Vector2(0, -64)
+scale = Vector2(0.453125, 1)
+texture = ExtResource("1_0tjrn")
+
+[node name="PathWalker" type="Node2D" parent="."]
+script = ExtResource("2_5v3iy")
+
+[node name="Backpack" type="Node2D" parent="."]
+script = ExtResource("5_cnsla")
+
+[node name="IngredientList" type="Node2D" parent="Backpack"]
+script = ExtResource("6_ek4iu")
+
+[node name="Container" type="Node2D" parent="Backpack/IngredientList"]
+
+[connection signal="timeout" from="State/GrabTimer" to="State" method="_on_grab_timer_timeout"]
+[connection signal="timeout" from="State/StunTimer" to="State" method="_on_stun_timer_timeout"]

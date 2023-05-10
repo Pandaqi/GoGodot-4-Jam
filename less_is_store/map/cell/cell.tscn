@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://cmoarxbtn5nt"]
+
+[ext_resource type="Script" path="res://less_is_store/map/cell/cell.gd" id="1_lk2n4"]
+[ext_resource type="Texture2D" uid="uid://33qdna17b2tu" path="res://less_is_store/map/cell/cell_overlays.webp" id="2_2mlsy"]
+[ext_resource type="PackedScene" uid="uid://b8ydhr0mu2as" path="res://less_is_store/ingredients/ingredient_icon.tscn" id="3_us3kr"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_b11qp"]
+size = Vector2(128, 128)
+
+[node name="Cell" type="StaticBody2D" groups=["Cells"]]
+collision_layer = 3
+collision_mask = 3
+script = ExtResource("1_lk2n4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_b11qp")
+
+[node name="BG" type="Sprite2D" parent="."]
+position = Vector2(0, -32)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_2mlsy")
+hframes = 8
+
+[node name="Overlay" type="Sprite2D" parent="."]
+position = Vector2(0, -32)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_2mlsy")
+hframes = 8
+
+[node name="IngredientIcon" parent="Overlay" instance=ExtResource("3_us3kr")]
+scale = Vector2(0.5, 0.5)

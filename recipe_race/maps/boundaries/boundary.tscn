@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://recipe_race/maps/boundaries/boundary.gd" id="1_fjs67"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8ku3a"]
-size = Vector3(50, 30, 5)
+size = Vector3(80, 30, 5)
 
 [node name="Boundary" type="Area3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -15.1142)

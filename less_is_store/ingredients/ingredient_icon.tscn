@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8ydhr0mu2as"]
+
+[ext_resource type="Texture2D" uid="uid://c6xrehyq6uil4" path="res://less_is_store/ingredients/ingredient_icons.webp" id="1_8a6p5"]
+
+[node name="IngredientIcon" type="Sprite2D"]
+texture = ExtResource("1_8a6p5")
+hframes = 8

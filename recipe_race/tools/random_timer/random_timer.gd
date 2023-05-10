@@ -10,7 +10,7 @@ var cfg = {}
 
 @onready var timer = $Timer
 
-signal on_timeout()
+signal timeout
 
 func activate(config = {}):
 	cfg = config # TODO: only override known keys on base_cfg
@@ -26,5 +26,5 @@ func restart_timer():
 	timer.start()
 
 func _on_timer_timeout():
-	emit_signal("on_timeout")
+	emit_signal("timeout")
 	restart_timer()

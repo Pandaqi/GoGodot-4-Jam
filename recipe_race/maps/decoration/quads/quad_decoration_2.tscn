@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://c4b04hg5sy0vf"]
+
+[ext_resource type="Texture2D" uid="uid://bau22rl7swdm1" path="res://recipe_race/maps/decoration/quads/quad_decoration_2.webp" id="1_wx4tf"]
+
+[node name="QuadDec2" type="Sprite3D"]
+transform = Transform3D(1.252, 0, 0.826136, 0, 1.5, 0, -0.826136, 0, 1.252, 18.1961, 0.811302, -2.76722)
+axis = 1
+shaded = true
+double_sided = false
+texture = ExtResource("1_wx4tf")

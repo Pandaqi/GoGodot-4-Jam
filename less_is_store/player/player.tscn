@@ -1,0 +1,39 @@
+[gd_scene load_steps=6 format=3 uid="uid://bnya71jmxepul"]
+
+[ext_resource type="Script" path="res://less_is_store/player/player.gd" id="1_ud6al"]
+[ext_resource type="Texture2D" uid="uid://ytb3b2y6apqc" path="res://icon.svg" id="2_rvipm"]
+[ext_resource type="Script" path="res://less_is_store/player/mover.gd" id="3_dd3pc"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_vhykd"]
+height = 55.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bqgj2"]
+size = Vector2(75, 42)
+
+[node name="Player" type="CharacterBody2D" groups=["Players"]]
+collision_mask = 2
+script = ExtResource("1_ud6al")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -10)
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_vhykd")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0, 1, 0.160784, 1)
+position = Vector2(0, -64)
+scale = Vector2(0.5, 1)
+texture = ExtResource("2_rvipm")
+
+[node name="Mover" type="Node2D" parent="."]
+script = ExtResource("3_dd3pc")
+
+[node name="Area2D" type="Area2D" parent="Mover"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Mover/Area2D"]
+position = Vector2(0.5, -19)
+shape = SubResource("RectangleShape2D_bqgj2")
+
+[connection signal="body_entered" from="Mover/Area2D" to="Mover" method="_on_area_2d_body_entered"]

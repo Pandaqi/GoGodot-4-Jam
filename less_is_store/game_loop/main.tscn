@@ -1,0 +1,65 @@
+[gd_scene load_steps=11 format=3 uid="uid://b5o8ovy2h6flm"]
+
+[ext_resource type="Script" path="res://less_is_store/map/map.gd" id="1_57xkf"]
+[ext_resource type="Script" path="res://less_is_store/game_loop/main.gd" id="1_sc3ac"]
+[ext_resource type="Script" path="res://less_is_store/clients/clients.gd" id="3_furhk"]
+[ext_resource type="Script" path="res://less_is_store/player/players.gd" id="4_bneyr"]
+[ext_resource type="PackedScene" uid="uid://djg8658g8ijpx" path="res://recipe_race/tools/random_timer/random_timer.tscn" id="4_mnnbd"]
+[ext_resource type="Script" path="res://less_is_store/score/score.gd" id="7_0ve8q"]
+[ext_resource type="Script" path="res://less_is_store/camera/camera.gd" id="7_h2ubr"]
+[ext_resource type="Script" path="res://less_is_store/ui/UI.gd" id="8_oue8b"]
+[ext_resource type="FontFile" uid="uid://nhg6om1bo02b" path="res://less_is_store/ui/Tape-leKd.otf" id="8_v8m83"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_u41yr"]
+font = ExtResource("8_v8m83")
+font_size = 48
+outline_size = 4
+outline_color = Color(0, 0, 0, 1)
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_sc3ac")
+
+[node name="Map" type="Node2D" parent="."]
+script = ExtResource("1_57xkf")
+
+[node name="BG" type="Node2D" parent="Map"]
+y_sort_enabled = true
+
+[node name="Floor" type="Node2D" parent="Map"]
+y_sort_enabled = true
+
+[node name="Overlay" type="Node2D" parent="Map"]
+y_sort_enabled = true
+
+[node name="Clients" type="Node2D" parent="."]
+script = ExtResource("3_furhk")
+
+[node name="RandomTimer" parent="Clients" instance=ExtResource("4_mnnbd")]
+
+[node name="Players" type="Node2D" parent="."]
+script = ExtResource("4_bneyr")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+script = ExtResource("7_h2ubr")
+
+[node name="Score" type="Node2D" parent="."]
+script = ExtResource("7_0ve8q")
+
+[node name="UI" type="CanvasLayer" parent="."]
+script = ExtResource("8_oue8b")
+
+[node name="Score" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+
+[node name="Label" type="Label" parent="UI/Score"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 52.0
+grow_horizontal = 2
+text = "999"
+label_settings = SubResource("LabelSettings_u41yr")
+horizontal_alignment = 1

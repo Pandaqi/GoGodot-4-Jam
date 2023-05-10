@@ -1,6 +1,6 @@
 extends Node3D
 
-@export var level_bounds : Vector3 = Vector3(30, 2.5, 18)
+@export var level_bounds : Vector3 = Vector3(30, 0, 18)
 
 func activate():
 	var cauldrons = get_tree().get_nodes_in_group("Cauldrons")
@@ -34,5 +34,5 @@ func get_random_valid_position(config):
 func get_random_position():
 	var x = randf_range(-1,1)*level_bounds.x
 	var z = randf_range(-1,1)*level_bounds.z
-	var y = 2.5
+	var y = level_bounds.y
 	return Vector3(x, y, z)

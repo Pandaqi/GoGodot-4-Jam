@@ -11,6 +11,7 @@ var active : bool = false
 }
 
 signal removed(cause)
+signal type_changed(tp)
 
 func get_mod(key):
 	if modules.has(key): return modules[key]
@@ -23,13 +24,14 @@ func _ready():
 	
 	active = true
 	get_mod("level_wrapper").activate()
+	get_mod("visuals").play_idle()
 
 func is_active():
 	return active
 
 func set_type(t):
 	type = t
-	#TODO: update visuals
+	emit_signal("type_changed", t)
 
 func on_unaccepted_by(body):
 	var val = GDict.cfg.handle_unaccepted_ingredients

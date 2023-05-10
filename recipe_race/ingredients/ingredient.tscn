@@ -7,8 +7,6 @@
 [ext_resource type="Script" path="res://recipe_race/ingredients/mover.gd" id="5_nrbq5"]
 [ext_resource type="PackedScene" uid="uid://bxto50c0ah3on" path="res://recipe_race/player/level_wrapper/level_wrapper.tscn" id="6_m1h57"]
 
-[sub_resource type="SphereMesh" id="SphereMesh_tvvsg"]
-
 [sub_resource type="Animation" id="Animation_d6fwb"]
 length = 0.001
 tracks/0/type = "value"
@@ -42,6 +40,18 @@ tracks/2/path = NodePath("MeshContainer:rotation")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
@@ -87,6 +97,22 @@ tracks/2/keys = {
 "values": [Vector3(0, 0, 0), Vector3(0, 6.28319, 0)]
 }
 
+[sub_resource type="Animation" id="Animation_n7id4"]
+resource_name = "idle"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 6.28319, 0)]
+}
+
 [sub_resource type="Animation" id="Animation_38xy2"]
 resource_name = "jump_prepare"
 length = 1.2
@@ -107,6 +133,7 @@ tracks/0/keys = {
 _data = {
 "RESET": SubResource("Animation_d6fwb"),
 "appear": SubResource("Animation_cbq88"),
+"idle": SubResource("Animation_n7id4"),
 "jump_prepare": SubResource("Animation_38xy2")
 }
 
@@ -120,10 +147,6 @@ script = ExtResource("1_6hqok")
 script = ExtResource("2_a3m8k")
 
 [node name="MeshContainer" type="Node3D" parent="Visuals"]
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Visuals/MeshContainer"]
-mesh = SubResource("SphereMesh_tvvsg")
-skeleton = NodePath("../../..")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Visuals"]
 libraries = {

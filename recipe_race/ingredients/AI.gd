@@ -44,4 +44,5 @@ func move():
 	
 	var final_force = vec * rand_speed
 	body.get_mod("mover").add_force(final_force)
+	body.get_mod("visuals").play_idle()
 	
