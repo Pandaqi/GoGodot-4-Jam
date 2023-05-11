@@ -18,3 +18,4 @@ func place_player(idx : int):
 	p.set_position(start_cell.visual.get_position())
 	
 	map.layers.overlay.add_child(p)
+	p.get_mod("mover").connect("dash_changed", main_node.get_mod("ui").on_dash_changed)

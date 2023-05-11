@@ -9,10 +9,15 @@ var num_slots : int = -1
 
 var offset : Vector2 = Vector2(0,-125)
 var backpack
+var active : bool = true
 
 func activate(b):
 	backpack = b
 	cache_icons(b.max_content)
+
+func set_active(v):
+	active = v
+	set_visible(active)
 
 func cache_icons(cache_size):
 	for i in range(cache_size):
@@ -52,6 +57,8 @@ func visualize(content, num_slots = -1):
 	set_scale(Vector2.ONE*SCALE)
 
 func _physics_process(dt):
+	if not active: return
+	
 	var pos_2d = backpack.global_transform.origin
 	pos_2d += offset
 	set_position(pos_2d)

@@ -5,5 +5,6 @@ enum CellType {
 	EMPTY,
 	ENTRANCE,
 	CHECKOUT,
-	BUYABLE
+	BUYABLE,
+	WALL
 }

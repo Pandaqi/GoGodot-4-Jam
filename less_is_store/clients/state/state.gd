@@ -1,9 +1,11 @@
 extends Node2D
 
 enum State {
+	ARRIVING,
 	WALKING,
 	GRABBING,
-	STUNNED
+	STUNNED,
+	LEAVING
 }
 
 @onready var anim_player : AnimationPlayer = $AnimationPlayer
@@ -14,10 +16,16 @@ const STUN_TIMER_BOUNDS = { "min": 3.0, "max": 8 }
 @onready var grab_timer : Timer = $GrabTimer
 const GRAB_TIMER_BOUNDS = { "min": 1.0, "max": 3.5 }
 
+const KNOCKBACK_FORCE : float = 400.0
+
 @onready var body = get_parent()
 var state : State
 
 func activate():
+	change_state_to(State.ARRIVING)
+	anim_player.play("appear")
+	await anim_player.animation_finished
+	
 	body.get_mod("path_walker").connect("arrived", on_walking_arrived)
 	change_state_to(State.WALKING)
 
@@ -34,7 +42,9 @@ func get_cur_cell() -> Cell:
 func change_state_to(new_state):
 	state = new_state
 	
-	anim_player.stop(true)
+	if is_inactive(): return
+	
+	anim_player.play("idle")
 	if state == State.WALKING:
 		var our_cell = get_cur_cell()
 		var target_cell = get_map().get_cell_next_to(Enums.CellType.BUYABLE)
@@ -51,13 +61,27 @@ func change_state_to(new_state):
 	if state == State.STUNNED:
 		anim_player.play("stunned")
 		body.get_mod("path_walker").stop_following()
-		body.get_mod("backpack").change_max_content(-1)
-		if body.get_mod("backpack").has_zero_size():
-			return leave()
 		start_stunned_timer()
+		
+		if GDict.cfg.dash_reduces_backpack:
+			body.get_mod("backpack").change_max_content(-1)
+			if body.get_mod("backpack").has_zero_size():
+				return leave()
 
-func stun():
+func is_inactive():
+	return [State.ARRIVING, State.LEAVING].has(state)
+
+func on_hit_by_player(player):
+	if is_inactive(): return
+	if GDict.cfg.touch_stops_people or GDict.cfg.dash_stops_people:
+		return leave()
+	stun(player)
+
+func stun(player):
 	if is_stunned(): return
+	var repel_force = (body.global_position - player.global_position).normalized()
+	repel_force *= KNOCKBACK_FORCE
+	body.get_mod("knockback").add_force(repel_force)
 	change_state_to(State.STUNNED)
 
 func should_leave():
@@ -90,7 +114,13 @@ func _on_stun_timer_timeout():
 
 func leave(pay : bool = false):
 	if pay: body.emit_signal("score", body)
-	body.remove()
-	# TODO: add products/money from backpack to score (if `pay` true) + remove ourselves + particles and feedback and stuff
+	change_state_to(State.LEAVING)
+	
+	anim_player.play_backwards("appear")
+
+	# TODO: particles and feedback and stuff
 
 
+func _on_animation_player_animation_finished(anim_name):
+	if anim_name == "appear" and state == State.LEAVING:
+		body.remove()

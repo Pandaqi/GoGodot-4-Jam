@@ -5,6 +5,8 @@ const CELL_SIZE : Vector2 = Vector2(128, 128)
 const MIN_GENERATION_PATH_LENGTH : int = 8
 const MIN_PERCENTAGE_FILLED : float = 0.4
 const MAX_RANDOM_WALK_TRIES : int = 500
+const MAX_ENTRANCES : int = 4
+const MAX_CHECKOUTS : int = 6
 var grid : Array
 var grid_flat : Array
 var grid_visual : Array
@@ -16,6 +18,7 @@ var entrance_cells : Array
 var checkout_cells : Array
 
 var available_buyables : Array
+var generation_done : bool = false
 
 var floor_color : Color
 
@@ -25,10 +28,16 @@ var floor_color : Color
 	"overlay": $Overlay
 }
 
+signal cell_changed(cell)
+
 func activate():
 	determine_available_buyables()
 	determine_floor_color()
 	load_map()
+	generation_done = true
+
+func generation_is_done() -> bool:
+	return generation_done
 
 func determine_floor_color():
 	floor_color = Color.from_hsv(randf_range(0,360), 0.3, 0.8)
@@ -47,6 +56,7 @@ func load_map():
 	create_pathfinding_map()
 	walk_through_grid()
 	draw_grid()
+	add_walls()
 
 func get_bounds():
 	return {
@@ -157,6 +167,7 @@ func create_pathfinding_map():
 func walk_through_grid():
 	var too_few_objects = true
 	var tries = 0
+	var paths_placed = 0
 	while too_few_objects:
 		tries += 1
 		if tries >= MAX_RANDOM_WALK_TRIES: break
@@ -168,7 +179,12 @@ func walk_through_grid():
 		var edge_cell_1 = valid_cells.pick_random()
 		var edge_cell_2 = valid_cells.pick_random()
 		
-		var use_rare_cell = (tries > 2)
+		var use_existing_cells = (paths_placed > 3)
+		if use_existing_cells:
+			edge_cell_1 = get_entrance()
+			edge_cell_2 = get_checkout()
+		
+		var use_rare_cell = (paths_placed > 4)
 		var rare_cells = get_cells_of_type(Enums.CellType.UNKNOWN)
 		if use_rare_cell and rare_cells.size() > 0:
 			edge_cell_2 = rare_cells.pick_random()
@@ -177,6 +193,7 @@ func walk_through_grid():
 		var too_short = path.size() <= MIN_GENERATION_PATH_LENGTH
 		if too_short: continue
 		
+		paths_placed += 1
 		place_objects_next_to_path(path)
 		
 		var percentage_filled = float(get_cells_of_type(Enums.CellType.BUYABLE).size()) / float(get_total_map_size())
@@ -211,14 +228,14 @@ func place_objects_next_to_path(path):
 		elif i == (path.size() - 1) and is_on_edge(cell.grid_pos): 
 			type = Enums.CellType.CHECKOUT
 		
+		# TODO: generalize this to a "too_many_of_type" function?
+		var too_many_entrances = type == Enums.CellType.ENTRANCE and get_cells_of_type(type).size() >= MAX_ENTRANCES
+		var too_many_checkouts = type == Enums.CellType.CHECKOUT and get_cells_of_type(type).size() >= MAX_CHECKOUTS
+		var too_many_of_type = too_many_entrances or too_many_checkouts
+		if too_many_of_type: continue
+		
 		var changed_cell = place_object_next_to_cell(cell, type)
 		if changed_cell.is_invalid(): continue
-		
-		var is_entrance = changed_cell.type == Enums.CellType.ENTRANCE
-		if is_entrance: entrance_cells.append(changed_cell)
-		
-		var is_checkout = changed_cell.type == Enums.CellType.CHECKOUT
-		if is_checkout: checkout_cells.append(cell)
 		
 		var is_buyable = changed_cell.type == Enums.CellType.BUYABLE
 		if is_buyable:
@@ -229,11 +246,13 @@ func get_random_buyable():
 
 # TO DO: re-use existing cells from time to time??
 func place_object_next_to_cell(cell : Cell, type : Enums.CellType) -> Cell:
+	var can_be_same_cell = GDict.cell_types[type].has("passthrough")
 	var nbs = get_neighbors(cell)
 	nbs = shake_cells_with_type_assigned(nbs)
 	
-	var can_be_same_cell = GDict.cell_types[type].has("passthrough")
-	if can_be_same_cell: nbs = [cell]
+	if can_be_same_cell: 
+		nbs = [cell]
+		nbs = shake_non_passthrough_cells(nbs)
 	
 	var needs_edge = GDict.cell_types[type].has("needs_edge")
 	if needs_edge: nbs = shake_non_edge_cells(nbs)
@@ -252,6 +271,8 @@ func change_cell_type(cell : Cell, type : Enums.CellType):
 		astar.set_point_weight_scale(cell.id, 0.01)
 	else: 
 		astar.set_point_disabled(cell.id, true)
+	
+	emit_signal("cell_changed", cell)
 
 func get_rotation_index_for_edge(cell : Cell) -> int:
 	var pos = cell.grid_pos
@@ -278,6 +299,29 @@ func draw_grid():
 		
 		c.data = cell
 		cell.visual = c
+		c.sync_visuals_to_data(self)
+		transfer_visual_layers(c)
+
+func add_walls():
+	var list = []
+	for x in range(-1,MAP_SIZE.x+1):
+		var pos_top = Vector2i(x, -1)
+		var pos_bottom = Vector2i(x, MAP_SIZE.y)
+		list.append(Cell.new(-1,pos_top))
+		list.append(Cell.new(-1,pos_bottom))
+	
+	for y in range(MAP_SIZE.y):
+		var pos_left = Vector2i(-1, y)
+		var pos_right = Vector2i(MAP_SIZE.x, y)
+		list.append(Cell.new(-1,pos_left))
+		list.append(Cell.new(-1,pos_right))
+	
+	for elem in list:
+		var c = cell_scene.instantiate()
+		add_child(c)
+		
+		elem.set_type(Enums.CellType.WALL)
+		c.data = elem
 		c.sync_visuals_to_data(self)
 		transfer_visual_layers(c)
 
@@ -342,10 +386,10 @@ func get_cell_next_to(type):
 	return get_passthrough_cell_next_to_another(option)
 
 func get_entrance():
-	return entrance_cells.pick_random()
+	return get_cells_of_type(Enums.CellType.ENTRANCE).pick_random()
 
 func get_checkout():
-	return checkout_cells.pick_random()
+	return get_cells_of_type(Enums.CellType.CHECKOUT).pick_random()
 
 
 		

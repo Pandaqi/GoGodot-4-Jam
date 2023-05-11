@@ -1,20 +1,85 @@
-[gd_scene load_steps=11 format=3 uid="uid://b5o8ovy2h6flm"]
+[gd_scene load_steps=23 format=3 uid="uid://b5o8ovy2h6flm"]
 
 [ext_resource type="Script" path="res://less_is_store/map/map.gd" id="1_57xkf"]
 [ext_resource type="Script" path="res://less_is_store/game_loop/main.gd" id="1_sc3ac"]
+[ext_resource type="Script" path="res://less_is_store/progression/progression.gd" id="2_mfdml"]
+[ext_resource type="Texture2D" uid="uid://cw2jsp16yaj6a" path="res://less_is_store/map/bg_grass_tile.webp" id="3_dtib6"]
 [ext_resource type="Script" path="res://less_is_store/clients/clients.gd" id="3_furhk"]
+[ext_resource type="Script" path="res://less_is_store/map/shadows.gd" id="4_5jhjj"]
+[ext_resource type="PackedScene" uid="uid://bp0y1c4thtthr" path="res://less_is_store/tools/controlled_placement/controlled_placement.tscn" id="4_7326a"]
 [ext_resource type="Script" path="res://less_is_store/player/players.gd" id="4_bneyr"]
-[ext_resource type="PackedScene" uid="uid://djg8658g8ijpx" path="res://recipe_race/tools/random_timer/random_timer.tscn" id="4_mnnbd"]
 [ext_resource type="Script" path="res://less_is_store/score/score.gd" id="7_0ve8q"]
+[ext_resource type="Script" path="res://less_is_store/powerups/powerups.gd" id="7_828v1"]
 [ext_resource type="Script" path="res://less_is_store/camera/camera.gd" id="7_h2ubr"]
 [ext_resource type="Script" path="res://less_is_store/ui/UI.gd" id="8_oue8b"]
-[ext_resource type="FontFile" uid="uid://nhg6om1bo02b" path="res://less_is_store/ui/Tape-leKd.otf" id="8_v8m83"]
+[ext_resource type="Texture2D" uid="uid://m4yqfuegpdtn" path="res://less_is_store/ui/progress_under.webp" id="10_syeor"]
+[ext_resource type="Texture2D" uid="uid://bahrgvgvjoy7r" path="res://less_is_store/progression/stage_images/tutorial_bg.webp" id="11_ujam3"]
+[ext_resource type="Texture2D" uid="uid://cfk5msropwh5m" path="res://less_is_store/ui/progress_over.webp" id="11_vnsuq"]
+[ext_resource type="Texture2D" uid="uid://dfrptudrte4ec" path="res://less_is_store/ui/progress_progress.webp" id="12_v5hij"]
+[ext_resource type="Texture2D" uid="uid://o31exqhkhkpw" path="res://less_is_store/ui/progress_good.webp" id="13_vtdfp"]
+[ext_resource type="Texture2D" uid="uid://bk4fqbi8ajax" path="res://less_is_store/ui/progress_bad.webp" id="14_mcqg2"]
+[ext_resource type="Texture2D" uid="uid://dyhjkfyfk63ts" path="res://less_is_store/ui/powerup_dash.webp" id="15_oli0p"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_u41yr"]
-font = ExtResource("8_v8m83")
-font_size = 48
-outline_size = 4
-outline_color = Color(0, 0, 0, 1)
+[sub_resource type="Animation" id="Animation_ha6xe"]
+resource_name = "appear"
+length = 0.6
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control/ColorRect:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.6),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Control/MarginContainer:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.3, 0.5, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(1e-05, 1e-05), Vector2(1.2, 1.2), Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_0teyq"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control/ColorRect:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Control/MarginContainer:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_sbfjh"]
+_data = {
+"RESET": SubResource("Animation_0teyq"),
+"appear": SubResource("Animation_ha6xe")
+}
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_sc3ac")
@@ -22,11 +87,22 @@ script = ExtResource("1_sc3ac")
 [node name="Map" type="Node2D" parent="."]
 script = ExtResource("1_57xkf")
 
+[node name="Sprite2D" type="Sprite2D" parent="Map"]
+texture_repeat = 2
+position = Vector2(1269, 1162)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("3_dtib6")
+region_enabled = true
+region_rect = Rect2(0, 0, 10000, 10000)
+
 [node name="BG" type="Node2D" parent="Map"]
 y_sort_enabled = true
 
 [node name="Floor" type="Node2D" parent="Map"]
 y_sort_enabled = true
+
+[node name="Shadows" type="Node2D" parent="Map/Floor"]
+script = ExtResource("4_5jhjj")
 
 [node name="Overlay" type="Node2D" parent="Map"]
 y_sort_enabled = true
@@ -34,13 +110,19 @@ y_sort_enabled = true
 [node name="Clients" type="Node2D" parent="."]
 script = ExtResource("3_furhk")
 
-[node name="RandomTimer" parent="Clients" instance=ExtResource("4_mnnbd")]
+[node name="ControlledPlacement" parent="Clients" instance=ExtResource("4_7326a")]
 
 [node name="Players" type="Node2D" parent="."]
 script = ExtResource("4_bneyr")
 
 [node name="Camera2D" type="Camera2D" parent="."]
+process_mode = 3
 script = ExtResource("7_h2ubr")
+
+[node name="Powerups" type="Node2D" parent="."]
+script = ExtResource("7_828v1")
+
+[node name="ControlledPlacement" parent="Powerups" instance=ExtResource("4_7326a")]
 
 [node name="Score" type="Node2D" parent="."]
 script = ExtResource("7_0ve8q")
@@ -50,16 +132,148 @@ script = ExtResource("8_oue8b")
 
 [node name="Score" type="Control" parent="UI"]
 layout_mode = 3
-anchors_preset = 10
-anchor_right = 1.0
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
 grow_horizontal = 2
 
-[node name="Label" type="Label" parent="UI/Score"]
+[node name="MarginContainer" type="MarginContainer" parent="UI/Score"]
 layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 52.0
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_right = 300.0
+offset_bottom = 40.0
 grow_horizontal = 2
-text = "999"
-label_settings = SubResource("LabelSettings_u41yr")
-horizontal_alignment = 1
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="TextureProgressBar" type="TextureProgressBar" parent="UI/Score/MarginContainer"]
+custom_minimum_size = Vector2(600, 0)
+layout_mode = 2
+value = 50.0
+nine_patch_stretch = true
+stretch_margin_left = 16
+stretch_margin_top = 16
+stretch_margin_right = 16
+stretch_margin_bottom = 16
+texture_under = ExtResource("10_syeor")
+texture_over = ExtResource("11_vnsuq")
+texture_progress = ExtResource("12_v5hij")
+
+[node name="ProgressGood" type="TextureRect" parent="UI/Score"]
+layout_mode = 0
+offset_left = -368.0
+offset_right = -304.0
+offset_bottom = 64.0
+texture = ExtResource("13_vtdfp")
+
+[node name="ProgressBad" type="TextureRect" parent="UI/Score"]
+layout_mode = 0
+offset_left = 308.0
+offset_right = 372.0
+offset_bottom = 64.0
+texture = ExtResource("14_mcqg2")
+
+[node name="Dash" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+grow_horizontal = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/Dash"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_right = 300.0
+offset_bottom = 40.0
+grow_horizontal = 2
+scale = Vector2(1, 0.66)
+theme_override_constants/margin_left = 150
+theme_override_constants/margin_top = 100
+theme_override_constants/margin_right = 150
+theme_override_constants/margin_bottom = 20
+
+[node name="TextureProgressBar" type="TextureProgressBar" parent="UI/Dash/MarginContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+max_value = 10.0
+nine_patch_stretch = true
+stretch_margin_left = 16
+stretch_margin_top = 16
+stretch_margin_right = 16
+stretch_margin_bottom = 16
+texture_under = ExtResource("10_syeor")
+texture_over = ExtResource("11_vnsuq")
+texture_progress = ExtResource("12_v5hij")
+tint_under = Color(1, 0.839216, 0, 1)
+tint_over = Color(1, 0.854902, 0, 1)
+tint_progress = Color(1, 0.854902, 0, 1)
+
+[node name="ProgressGood" type="TextureRect" parent="UI/Dash"]
+layout_mode = 0
+offset_left = -188.0
+offset_top = 60.0
+offset_right = 68.0
+offset_bottom = 316.0
+scale = Vector2(0.125, 0.125)
+texture = ExtResource("15_oli0p")
+
+[node name="Progression" type="CanvasLayer" parent="."]
+process_mode = 3
+script = ExtResource("2_mfdml")
+
+[node name="Timer" type="Timer" parent="Progression"]
+one_shot = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Progression"]
+libraries = {
+"": SubResource("AnimationLibrary_sbfjh")
+}
+
+[node name="Control" type="Control" parent="Progression"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="Progression/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.156863, 0.156863, 0.156863, 0.858824)
+
+[node name="MarginContainer" type="MarginContainer" parent="Progression/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(640, 360)
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="BG" type="TextureRect" parent="Progression/Control/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("11_ujam3")
+expand_mode = 3
+
+[node name="Tutorial" type="TextureRect" parent="Progression/Control/MarginContainer"]
+layout_mode = 2
+expand_mode = 3
+
+[connection signal="timeout" from="Progression/Timer" to="Progression" method="_on_timer_timeout"]

@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://bp0y1c4thtthr"]
+
+[ext_resource type="Script" path="res://less_is_store/tools/controlled_placement/controlled_placement.gd" id="1_l1vh4"]
+[ext_resource type="PackedScene" uid="uid://djg8658g8ijpx" path="res://recipe_race/tools/random_timer/random_timer.tscn" id="2_1tdf4"]
+
+[node name="ControlledPlacement" type="Node"]
+script = ExtResource("1_l1vh4")
+
+[node name="RandomTimer" parent="." instance=ExtResource("2_1tdf4")]

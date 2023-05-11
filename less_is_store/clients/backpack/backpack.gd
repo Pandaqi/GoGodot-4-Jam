@@ -10,7 +10,8 @@ const SIZE_BOUNDS = { "min": 1, "max": 4 }
 func activate():
 	body.connect("removed", on_removed)
 	
-	max_content = randi_range(SIZE_BOUNDS.min, SIZE_BOUNDS.max)
+	var size_bounds = GDict.cfg.backpack_size
+	max_content = randi_range(size_bounds.min, size_bounds.max)
 	
 	remove_child(ingredient_list)
 	body.map.add_child(ingredient_list)
@@ -48,5 +49,6 @@ func has_zero_size() -> bool:
 func update_visuals():
 	ingredient_list.visualize(content, max_content)
 
-func on_removed():
+func on_removed(client):
+	ingredient_list.set_active(false)
 	ingredient_list.queue_free()

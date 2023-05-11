@@ -5,11 +5,12 @@ var map
 	"state": $State,
 	"path_walker": $PathWalker,
 	"visuals": $Visuals,
-	"backpack": $Backpack
+	"backpack": $Backpack,
+	"knockback": $Knockback
 }
 
 signal score(client)
-signal removed
+signal removed(client)
 
 func get_mod(key):
 	if modules.has(key): return modules[key]
@@ -22,5 +23,6 @@ func activate(map):
 	modules.backpack.activate()
 
 func remove():
-	emit_signal("removed")
 	self.queue_free()
+	self.remove_from_group("Clients")
+	emit_signal("removed", self)

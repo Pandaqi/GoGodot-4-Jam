@@ -1,7 +1,8 @@
 extends Camera2D
 
 @onready var main_node = get_parent()
-const EDGE_MARGIN : Vector2 = Vector2(50,50)
+const EDGE_MARGIN : Vector2 = Vector2(100, 100)
+const TOP_OFFSET : float = 100.0 # to compensate for UI
 const LERP_SPEED : float = 10.0
 var bounds
 
@@ -12,7 +13,8 @@ func _physics_process(dt):
 	center(dt)
 
 func center(dt):
-	var center = 0.5 * (bounds.top_left + bounds.bottom_right)
+	var ui_compensate = Vector2.UP*TOP_OFFSET
+	var center = 0.5 * (bounds.top_left + bounds.bottom_right) + ui_compensate
 	var size = bounds.bottom_right - bounds.top_left + 2*EDGE_MARGIN
 	var vp = get_viewport().size
 	

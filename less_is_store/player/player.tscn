@@ -1,14 +1,18 @@
-[gd_scene load_steps=6 format=3 uid="uid://bnya71jmxepul"]
+[gd_scene load_steps=8 format=3 uid="uid://bnya71jmxepul"]
 
 [ext_resource type="Script" path="res://less_is_store/player/player.gd" id="1_ud6al"]
 [ext_resource type="Texture2D" uid="uid://ytb3b2y6apqc" path="res://icon.svg" id="2_rvipm"]
 [ext_resource type="Script" path="res://less_is_store/player/mover.gd" id="3_dd3pc"]
+[ext_resource type="PackedScene" uid="uid://c6wt2xsgxkdh6" path="res://less_is_store/tools/shadow_locator/shadow_locator.tscn" id="4_ugcqr"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_vhykd"]
 height = 55.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bqgj2"]
-size = Vector2(75, 42)
+size = Vector2(86, 120)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n18gi"]
+size = Vector2(72, 32)
 
 [node name="Player" type="CharacterBody2D" groups=["Players"]]
 collision_mask = 2
@@ -28,12 +32,21 @@ texture = ExtResource("2_rvipm")
 [node name="Mover" type="Node2D" parent="."]
 script = ExtResource("3_dd3pc")
 
-[node name="Area2D" type="Area2D" parent="Mover"]
-collision_layer = 3
-collision_mask = 3
+[node name="PlayerArea" type="Area2D" parent="Mover"]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Mover/Area2D"]
-position = Vector2(0.5, -19)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Mover/PlayerArea"]
+position = Vector2(0, -47)
 shape = SubResource("RectangleShape2D_bqgj2")
 
-[connection signal="body_entered" from="Mover/Area2D" to="Mover" method="_on_area_2d_body_entered"]
+[node name="CellArea" type="Area2D" parent="Mover"]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Mover/CellArea"]
+position = Vector2(0, -14)
+shape = SubResource("RectangleShape2D_n18gi")
+
+[node name="ShadowLocator" parent="." instance=ExtResource("4_ugcqr")]
+
+[connection signal="body_entered" from="Mover/PlayerArea" to="Mover" method="_on_area_2d_body_entered"]
+[connection signal="body_entered" from="Mover/CellArea" to="Mover" method="_on_cell_area_body_entered"]

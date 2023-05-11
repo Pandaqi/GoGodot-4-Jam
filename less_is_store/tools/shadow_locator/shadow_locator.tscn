@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c6wt2xsgxkdh6"]
+
+[ext_resource type="Script" path="res://less_is_store/tools/shadow_locator/shadow_locator.gd" id="1_3lmwe"]
+
+[node name="ShadowLocator" type="Node2D" groups=["ShadowLocators"]]
+script = ExtResource("1_3lmwe")

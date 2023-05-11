@@ -6,7 +6,9 @@ extends Node2D
 	"camera": $Camera2D,
 	"players": $Players,
 	"score": $Score,
-	"ui": $UI
+	"ui": $UI,
+	"progression": $Progression,
+	"powerups": $Powerups
 }
 
 func get_mod(key):
@@ -15,9 +17,14 @@ func get_mod(key):
 	return null
 
 func _ready():
+	modules.progression.activate()
+	modules.progression.load_next_stage()
 	modules.map.activate()
 	modules.clients.activate()
+	modules.powerups.activate()
 	modules.camera.activate()
 	modules.players.activate()
 	modules.ui.activate()
 	modules.score.activate()
+	
+	

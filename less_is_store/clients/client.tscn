@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dh1x05uimkvyl"]
+[gd_scene load_steps=15 format=3 uid="uid://dh1x05uimkvyl"]
 
 [ext_resource type="Texture2D" uid="uid://ytb3b2y6apqc" path="res://icon.svg" id="1_0tjrn"]
 [ext_resource type="Script" path="res://less_is_store/clients/client.gd" id="1_ckolu"]
@@ -6,9 +6,50 @@
 [ext_resource type="Script" path="res://less_is_store/clients/state/state.gd" id="2_tmndr"]
 [ext_resource type="Script" path="res://less_is_store/clients/backpack/backpack.gd" id="5_cnsla"]
 [ext_resource type="Script" path="res://less_is_store/clients/backpack/ingredient_list.gd" id="6_ek4iu"]
+[ext_resource type="Script" path="res://less_is_store/clients/knockback.gd" id="7_a68jm"]
+[ext_resource type="PackedScene" uid="uid://c6wt2xsgxkdh6" path="res://less_is_store/tools/shadow_locator/shadow_locator.tscn" id="8_5aek1"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_afxei"]
 height = 55.0
+
+[sub_resource type="Animation" id="Animation_a4w2d"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("..:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../Visuals:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../Visuals:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
 
 [sub_resource type="Animation" id="Animation_6imxw"]
 resource_name = "stunned"
@@ -27,24 +68,68 @@ tracks/0/keys = {
 "values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0.392157)]
 }
 
-[sub_resource type="Animation" id="Animation_a4w2d"]
-length = 0.001
+[sub_resource type="Animation" id="Animation_dcsqw"]
+resource_name = "appear"
+length = 0.6
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("..:modulate")
+tracks/0/path = NodePath("../Visuals:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(1e-05, 1e-05), Vector2(0.7, 1.3), Vector2(1.3, 0.7), Vector2(1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../Visuals:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, -24), Vector2(0, 0), Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_ff3la"]
+resource_name = "idle"
+length = 0.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../Visuals:scale")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Color(1, 1, 1, 1)]
+"values": [Vector2(1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../Visuals:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_poqhq"]
 _data = {
 "RESET": SubResource("Animation_a4w2d"),
+"appear": SubResource("Animation_dcsqw"),
+"idle": SubResource("Animation_ff3la"),
 "stunned": SubResource("Animation_6imxw")
 }
 
@@ -90,5 +175,11 @@ script = ExtResource("6_ek4iu")
 
 [node name="Container" type="Node2D" parent="Backpack/IngredientList"]
 
+[node name="Knockback" type="Node2D" parent="."]
+script = ExtResource("7_a68jm")
+
+[node name="ShadowLocator" parent="." instance=ExtResource("8_5aek1")]
+
 [connection signal="timeout" from="State/GrabTimer" to="State" method="_on_grab_timer_timeout"]
 [connection signal="timeout" from="State/StunTimer" to="State" method="_on_stun_timer_timeout"]
+[connection signal="animation_finished" from="State/AnimationPlayer" to="State" method="_on_animation_player_animation_finished"]

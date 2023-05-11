@@ -2,6 +2,7 @@ extends StaticBody2D
 
 var data : Cell
 const MAX_FLOOR_COLOR_VAR : float = 0.15
+const OVERLAY_SCALE : float = 0.5
 @onready var col_shape = $CollisionShape2D
 @onready var buyable_icon = $Overlay/IngredientIcon
 @onready var layers = {
@@ -34,6 +35,10 @@ func sync_floor_to_data(map):
 	if randf() <= 0.5: floor_color = floor_color.darkened(variation)
 	else: floor_color = floor_color.lightened(variation)
 	layers.bg.modulate = floor_color
+	
+	var tint_overlay = GDict.cell_types[data.type].has("tint_overlay_to_floor")
+	if tint_overlay:
+		layers.overlay.modulate = floor_color
 
 func sync_type_to_data():
 	var dict_data = GDict.cell_types[data.type]
@@ -43,11 +48,24 @@ func sync_type_to_data():
 	var show_overlay = dict_data.has("overlay")
 	var overlay_node = layers.overlay if layers.has("overlay") else layers.floor
 	
-	overlay_node.hide()
+	var tw
+	var rand_tween_duration = randf_range(0.2, 0.4)
 	if show_overlay:
 		var frame = GDict.cell_types[data.type].frame
 		overlay_node.set_frame(frame)
 		overlay_node.show()
+		
+		tw = get_tree().create_tween()
+		overlay_node.set_scale(Vector2.ZERO)
+		tw.tween_property(overlay_node, "scale", Vector2.ONE*OVERLAY_SCALE, rand_tween_duration).set_trans(Tween.TRANS_ELASTIC)
+	else:
+		tw = get_tree().create_tween()
+		overlay_node.set_scale(Vector2.ONE*OVERLAY_SCALE)
+		tw.tween_property(overlay_node, "scale", Vector2.ZERO, rand_tween_duration).set_trans(Tween.TRANS_LINEAR)
+	
+	await tw.finished
+	
+	if not show_overlay: overlay_node.hide()
 	
 	buyable_icon.hide()
 	var is_buyable = dict_data.has("buyable")
@@ -55,20 +73,22 @@ func sync_type_to_data():
 		buyable_icon.show()
 		buyable_icon.set_frame(GDict.ingredients[data.buyable].frame)
 	
-	
-
 func sync_visuals_to_data(map):
 	sync_position_to_data(map)
 	sync_floor_to_data(map)
 	sync_type_to_data()
 
-# @TODO: _start_ destroy process, other checks, something
 func on_hit_by_player(p):
-	var ignore_player_hits = (data.type != Enums.CellType.BUYABLE)
+	var buyable = GDict.cell_types[data.type].has("buyable")
+	var not_enough_dash = (p.get_mod("mover").get_dash_meter() < GDict.cfg.min_dash_required_for_destroying)
+	var ignore_player_hits = (not buyable) or (not GDict.cfg.dash_destroys_tiles) or not_enough_dash
 	if ignore_player_hits: return
 	
 	data.set_type(Enums.CellType.EMPTY)
 	sync_type_to_data()
+	
+	if GDict.cfg.destroying_tiles_empties_dash:
+		p.get_mod("mover").empty_dash_meter()
 
 # Never really use this, we only change type
 func remove():
