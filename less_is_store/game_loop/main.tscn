@@ -1,7 +1,8 @@
-[gd_scene load_steps=23 format=3 uid="uid://b5o8ovy2h6flm"]
+[gd_scene load_steps=27 format=3 uid="uid://b5o8ovy2h6flm"]
 
 [ext_resource type="Script" path="res://less_is_store/map/map.gd" id="1_57xkf"]
 [ext_resource type="Script" path="res://less_is_store/game_loop/main.gd" id="1_sc3ac"]
+[ext_resource type="AudioStream" uid="uid://c5d5034x8xxcw" path="res://less_is_store/game_loop/main_theme.ogg" id="2_41g3g"]
 [ext_resource type="Script" path="res://less_is_store/progression/progression.gd" id="2_mfdml"]
 [ext_resource type="Texture2D" uid="uid://cw2jsp16yaj6a" path="res://less_is_store/map/bg_grass_tile.webp" id="3_dtib6"]
 [ext_resource type="Script" path="res://less_is_store/clients/clients.gd" id="3_furhk"]
@@ -13,12 +14,41 @@
 [ext_resource type="Script" path="res://less_is_store/camera/camera.gd" id="7_h2ubr"]
 [ext_resource type="Script" path="res://less_is_store/ui/UI.gd" id="8_oue8b"]
 [ext_resource type="Texture2D" uid="uid://m4yqfuegpdtn" path="res://less_is_store/ui/progress_under.webp" id="10_syeor"]
+[ext_resource type="Script" path="res://less_is_store/feedback/feedback.gd" id="11_q56av"]
 [ext_resource type="Texture2D" uid="uid://bahrgvgvjoy7r" path="res://less_is_store/progression/stage_images/tutorial_bg.webp" id="11_ujam3"]
 [ext_resource type="Texture2D" uid="uid://cfk5msropwh5m" path="res://less_is_store/ui/progress_over.webp" id="11_vnsuq"]
 [ext_resource type="Texture2D" uid="uid://dfrptudrte4ec" path="res://less_is_store/ui/progress_progress.webp" id="12_v5hij"]
 [ext_resource type="Texture2D" uid="uid://o31exqhkhkpw" path="res://less_is_store/ui/progress_good.webp" id="13_vtdfp"]
 [ext_resource type="Texture2D" uid="uid://bk4fqbi8ajax" path="res://less_is_store/ui/progress_bad.webp" id="14_mcqg2"]
 [ext_resource type="Texture2D" uid="uid://dyhjkfyfk63ts" path="res://less_is_store/ui/powerup_dash.webp" id="15_oli0p"]
+[ext_resource type="FontFile" uid="uid://nhg6om1bo02b" path="res://less_is_store/ui/Tape-leKd.otf" id="22_3n274"]
+
+[sub_resource type="Animation" id="Animation_0teyq"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control/ColorRect:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Control/MarginContainer:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
 
 [sub_resource type="Animation" id="Animation_ha6xe"]
 resource_name = "appear"
@@ -48,41 +78,23 @@ tracks/1/keys = {
 "values": [Vector2(1e-05, 1e-05), Vector2(1.2, 1.2), Vector2(1, 1)]
 }
 
-[sub_resource type="Animation" id="Animation_0teyq"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Control/ColorRect:modulate")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 1)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Control/MarginContainer:scale")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(1, 1)]
-}
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_sbfjh"]
 _data = {
 "RESET": SubResource("Animation_0teyq"),
 "appear": SubResource("Animation_ha6xe")
 }
 
+[sub_resource type="LabelSettings" id="LabelSettings_v6p4i"]
+font = ExtResource("22_3n274")
+font_size = 48
+font_color = Color(0, 0, 0, 1)
+
 [node name="Main" type="Node2D"]
 script = ExtResource("1_sc3ac")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_41g3g")
+autoplay = true
 
 [node name="Map" type="Node2D" parent="."]
 script = ExtResource("1_57xkf")
@@ -126,6 +138,9 @@ script = ExtResource("7_828v1")
 
 [node name="Score" type="Node2D" parent="."]
 script = ExtResource("7_0ve8q")
+
+[node name="Feedback" type="CanvasLayer" parent="."]
+script = ExtResource("11_q56av")
 
 [node name="UI" type="CanvasLayer" parent="."]
 script = ExtResource("8_oue8b")
@@ -232,10 +247,14 @@ script = ExtResource("2_mfdml")
 [node name="Timer" type="Timer" parent="Progression"]
 one_shot = true
 
+[node name="ClockTimer" type="Timer" parent="Progression"]
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Progression"]
 libraries = {
 "": SubResource("AnimationLibrary_sbfjh")
 }
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="Progression"]
 
 [node name="Control" type="Control" parent="Progression"]
 layout_mode = 3
@@ -276,4 +295,18 @@ expand_mode = 3
 layout_mode = 2
 expand_mode = 3
 
+[node name="MarginContainer" type="MarginContainer" parent="Progression/Control/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/margin_top = 150
+
+[node name="Label" type="Label" parent="Progression/Control/MarginContainer/MarginContainer"]
+layout_mode = 2
+text = "00:00"
+label_settings = SubResource("LabelSettings_v6p4i")
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [connection signal="timeout" from="Progression/Timer" to="Progression" method="_on_timer_timeout"]
+[connection signal="timeout" from="Progression/ClockTimer" to="Progression" method="_on_clock_timer_timeout"]

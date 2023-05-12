@@ -3,9 +3,9 @@ extends Node
 var base_cfg = {
 	"backpack_size": { "min": 1, "max": 1 },
 	
-	# these two work best in tandem
 	"destroying_tiles_empties_dash": true,
-	"min_dash_required_for_destroying": 1
+	"max_cell_hits_per_dash": 1,
+	"min_dash_required_for_destroying": 0
 }
 
 var cfg = {}

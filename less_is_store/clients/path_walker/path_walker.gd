@@ -7,12 +7,17 @@ var active : bool = false
 const MAX_ERROR_POINT_RADIUS : float = 5.0
 const SPEED_BOUNDS : Dictionary = { "min": 100, "max": 180 }
 var speed : float = 0.0
-const DEBUG : bool = true
+const DEBUG : bool = false #DEBUGGING (should be false)
+
+const AUDIO_WALK_CONFIG = { "onoff": true, "stream": preload("res://less_is_store/player/sounds/walk_1.ogg"), "volume": -12 }
+@onready var audio_walk = $AudioWalk
+@onready var walk_particles : GPUParticles2D = $WalkParticles
 
 signal arrived
 
 func _ready():
 	speed = randf_range(SPEED_BOUNDS.min, SPEED_BOUNDS.max)
+	audio_walk.activate(AUDIO_WALK_CONFIG)
 
 func has_path():
 	return cur_path.size() > 0
@@ -20,10 +25,14 @@ func has_path():
 func follow(path):
 	cur_path = path
 	active = true
+	audio_walk.play()
+	walk_particles.set_emitting(true)
 
 func stop_following():
 	cur_path = []
 	active = false
+	audio_walk.stop()
+	walk_particles.set_emitting(false)
 
 func _physics_process(dt):
 	if not active: return

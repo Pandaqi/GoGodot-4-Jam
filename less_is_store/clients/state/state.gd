@@ -16,12 +16,20 @@ const STUN_TIMER_BOUNDS = { "min": 3.0, "max": 8 }
 @onready var grab_timer : Timer = $GrabTimer
 const GRAB_TIMER_BOUNDS = { "min": 1.0, "max": 3.5 }
 
+const AUDIO_CONFIG = { "dir": "res://less_is_store/clients/sounds/" }
+@onready var audio_player = $AudioPlayer
+
+@onready var appear_particles = $AppearParticles
+@onready var coin_particles = $CoinParticles
+
 const KNOCKBACK_FORCE : float = 400.0
 
 @onready var body = get_parent()
 var state : State
 
 func activate():
+	audio_player.activate(AUDIO_CONFIG)
+	
 	change_state_to(State.ARRIVING)
 	anim_player.play("appear")
 	await anim_player.animation_finished
@@ -42,9 +50,15 @@ func get_cur_cell() -> Cell:
 func change_state_to(new_state):
 	state = new_state
 	
+	if new_state == State.ARRIVING or new_state == State.LEAVING:
+		appear_particles.set_emitting(true)
+	
 	if is_inactive(): return
 	
 	anim_player.play("idle")
+	stun_timer.stop()
+	grab_timer.stop()
+	
 	if state == State.WALKING:
 		var our_cell = get_cur_cell()
 		var target_cell = get_map().get_cell_next_to(Enums.CellType.BUYABLE)
@@ -71,18 +85,21 @@ func change_state_to(new_state):
 func is_inactive():
 	return [State.ARRIVING, State.LEAVING].has(state)
 
-func on_hit_by_player(player):
-	if is_inactive(): return
+func on_hit_by_player(player) -> bool:
+	if is_inactive(): return false
 	if GDict.cfg.touch_stops_people or GDict.cfg.dash_stops_people:
-		return leave()
-	stun(player)
+		leave()
+		return true
+	return stun(player)
 
-func stun(player):
-	if is_stunned(): return
+func stun(player) -> bool:
+	if is_stunned(): return false
 	var repel_force = (body.global_position - player.global_position).normalized()
 	repel_force *= KNOCKBACK_FORCE
 	body.get_mod("knockback").add_force(repel_force)
+	body.give_feedback("Stunned!")
 	change_state_to(State.STUNNED)
+	return true
 
 func should_leave():
 	var at_checkout = get_cur_cell().type == Enums.CellType.CHECKOUT
@@ -113,12 +130,15 @@ func _on_stun_timer_timeout():
 	change_state_to(State.WALKING)
 
 func leave(pay : bool = false):
-	if pay: body.emit_signal("score", body)
-	change_state_to(State.LEAVING)
+	if pay: 
+		audio_player.play_from_list(["coins"])
+		coin_particles.set_emitting(true)
+		body.emit_signal("score", body)
+	else:
+		audio_player.play_from_list(["leave_bad"])
 	
+	change_state_to(State.LEAVING)	
 	anim_player.play_backwards("appear")
-
-	# TODO: particles and feedback and stuff
 
 
 func _on_animation_player_animation_finished(anim_name):

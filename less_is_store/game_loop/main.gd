@@ -8,7 +8,8 @@ extends Node2D
 	"score": $Score,
 	"ui": $UI,
 	"progression": $Progression,
-	"powerups": $Powerups
+	"powerups": $Powerups,
+	"feedback": $Feedback
 }
 
 func get_mod(key):

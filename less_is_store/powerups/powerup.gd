@@ -14,7 +14,7 @@ func _ready():
 func _on_area_2d_body_entered(body):
 	if not active: return
 	if not body.is_in_group("Players"): return
-	body.get_mod("mover").change_dash_meter(+1)
+	body.get_mod("powerups").receive(get_data_representation())
 	remove()
 
 func remove():
@@ -23,3 +23,6 @@ func remove():
 	await anim_player.animation_finished
 	queue_free()
 	emit_signal("removed", self)
+
+func get_data_representation():
+	return { "type": "dash" } #TODO: actually different types

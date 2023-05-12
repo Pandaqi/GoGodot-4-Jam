@@ -78,17 +78,18 @@ func sync_visuals_to_data(map):
 	sync_floor_to_data(map)
 	sync_type_to_data()
 
-func on_hit_by_player(p):
+func on_hit_by_player(p) -> bool:
 	var buyable = GDict.cell_types[data.type].has("buyable")
-	var not_enough_dash = (p.get_mod("mover").get_dash_meter() < GDict.cfg.min_dash_required_for_destroying)
-	var ignore_player_hits = (not buyable) or (not GDict.cfg.dash_destroys_tiles) or not_enough_dash
-	if ignore_player_hits: return
+	var ignore_player_hits = (not buyable) or (not GDict.cfg.dash_destroys_tiles)
+	if ignore_player_hits: return false
 	
 	data.set_type(Enums.CellType.EMPTY)
 	sync_type_to_data()
 	
 	if GDict.cfg.destroying_tiles_empties_dash:
 		p.get_mod("mover").empty_dash_meter()
+	
+	return true
 
 # Never really use this, we only change type
 func remove():

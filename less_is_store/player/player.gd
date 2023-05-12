@@ -2,7 +2,8 @@ extends CharacterBody2D
 
 @onready var main_node = get_node("/root/Main")
 @onready var modules = {
-	"mover": $Mover
+	"mover": $Mover,
+	"powerups": $Powerups
 }
 
 func get_mod(key):
@@ -12,3 +13,6 @@ func get_mod(key):
 
 func get_map():
 	return main_node.get_mod("map")
+
+func give_feedback(txt:String):
+	main_node.get_mod("feedback").add_for_node(self, { "text": txt })

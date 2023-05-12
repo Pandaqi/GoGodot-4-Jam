@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://bghfeuiwyjmlf"]
+
+[ext_resource type="Script" path="res://less_is_store/tools/audio_player/audio_player.gd" id="1_tin37"]
+
+[node name="AudioPlayer" type="Node2D"]
+script = ExtResource("1_tin37")
+
+[node name="Player" type="AudioStreamPlayer2D" parent="."]
+
+[connection signal="finished" from="Player" to="." method="_on_player_finished"]

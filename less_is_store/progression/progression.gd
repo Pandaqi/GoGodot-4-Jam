@@ -12,20 +12,31 @@ var we_won : bool = false
 const WIN_IMAGE = "win"
 const LOSS_IMAGE = "loss"
 
-const DEBUG_DURATION_SCALE : float = 0.2 #DEBUGGING; should be 1
+const DEBUG_DURATION_SCALE : float = 1.0 #DEBUGGING; should be 1
 const DEBUG_NO_IMAGES : bool = false
 
 @onready var tut_img : TextureRect = $Control/MarginContainer/Tutorial
 @onready var timer : Timer = $Timer
 @onready var anim_player : AnimationPlayer = $AnimationPlayer
 
+const STAGE_CHANGE_AUDIO = preload("res://less_is_store/progression/sounds/stage_change.ogg")
+const WIN_AUDIO = preload("res://less_is_store/progression/sounds/game_win.ogg")
+const LOSS_AUDIO = preload("res://less_is_store/progression/sounds/game_loss.ogg")
+@onready var audio_player : AudioStreamPlayer = $AudioStreamPlayer
+
 signal state_changed
+
+var clock : int = 0
+@onready var clock_timer : Timer = $ClockTimer
+@onready var time_played_label : Label = $Control/MarginContainer/MarginContainer/Label
 
 func activate():
 	prepare_cfg()
 	
 	main_node.get_mod("score").connect("score_changed", on_score_changed)
 	main_node.get_mod("map").connect("cell_changed", on_cell_changed)
+	
+	time_played_label.hide()
 
 func prepare_cfg():
 	var cfg = {}
@@ -52,6 +63,15 @@ func check_game_over():
 func goto_game_over(won : bool = false):
 	game_over = true
 	we_won = won
+	
+	var stream = WIN_AUDIO
+	if not we_won: stream = LOSS_AUDIO
+	audio_player.stream = stream
+	audio_player.play()
+	
+	time_played_label.show()
+	time_played_label.set_text(get_time_played())
+	
 	execute_stage_change()
 
 func execute_stage_change():
@@ -66,6 +86,8 @@ func load_next_stage():
 	if at_max_stage: return
 	stage += 1
 	at_max_stage = stage >= (GDict.stages.size() - 1)
+	audio_player.stream = STAGE_CHANGE_AUDIO
+	audio_player.play()
 	execute_stage_change()
 
 func set_stage_image():
@@ -89,12 +111,14 @@ func enable():
 	active = true
 	show()
 	get_tree().paused = true
+	clock_timer.stop()
 
 func disable():
 	active = false
 	hide()
 	get_tree().paused = false
 	restart_timer()
+	clock_timer.start()
 
 func restart_timer():
 	timer.wait_time = get_stage_data().duration * DEBUG_DURATION_SCALE
@@ -125,3 +149,16 @@ func get_factor():
 	var precise_stage : float = stage + (1.0 - timer.time_left / timer.wait_time)
 	var factor = precise_stage / num_stages
 	return factor
+
+func get_time_played() -> String:
+	var time = float(clock)
+	var minutes = floor(time / 60)
+	if minutes < 0: minutes = "0" + str(minutes)
+	
+	var seconds = floor(time) % 60
+	if seconds < 0: seconds = "0" + str(seconds)
+	
+	return str(minutes) + ":" + str(seconds)
+
+func _on_clock_timer_timeout():
+	clock += 1

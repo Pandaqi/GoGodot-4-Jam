@@ -42,5 +42,6 @@ func get_score_for_client(client) -> int:
 
 func on_client_scored(client):
 	var score = get_score_for_client(client)
+	main_node.get_mod("feedback").add_for_node(client, { "text": str(score) + " products!", "mood": "bad" })
 	main_node.get_mod("score").change(score)
 

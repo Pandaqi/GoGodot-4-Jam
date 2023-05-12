@@ -1,23 +1,42 @@
 extends Node2D
 
 @onready var body = get_parent()
-@onready var area = $Area2D
+@onready var player_area = $PlayerArea
+@onready var cell_area = $CellArea
 const BASE_SPEED : float = 360.0
-const DASH_SPEED : float = 750.0
+const DASH_SPEED : float = 875.0
 const DASH_DAMPING : float = 0.97
-const DASH_END_THRESHOLD : float = 240.0
+const DASH_END_THRESHOLD : float = 260.0
 const MAX_SLIDE_ITERATIONS : int = 1
 const MAX_DASH_POWER : int = 10
+
 var input_vec : Vector2 = Vector2.ZERO
 var facing_vec : Vector2 = Vector2.RIGHT
 var dashing : bool = false
 var speed : Vector2 = Vector2.ZERO
 var dash_power : int = 0
+var cell_hits_cur_dash : int = 0
+
+const AUDIO_WALK_CONFIG = { "onoff": true, "stream": preload("res://less_is_store/player/sounds/walk_1.ogg"), "volume": -6 }
+const AUDIO_CONFIG = { "dir": "res://less_is_store/player/sounds" }
+@onready var audio_walk = $AudioWalk
+@onready var audio_dash = $AudioDash
+
+@onready var walk_particles = $WalkParticles
+@onready var dash_particles = $DashParticles
 
 signal dash_changed
 
+func _ready():
+	audio_walk.activate(AUDIO_WALK_CONFIG)
+	audio_dash.activate(AUDIO_CONFIG)
+	end_dash()
+
 func no_input() -> bool:
 	return is_zero_approx(get_input_vec().length())
+
+func get_speed() -> Vector2:
+	return speed
 
 func _physics_process(dt: float):
 	check_move()
@@ -39,17 +58,31 @@ func check_dash():
 	
 	if dashing: 
 		speed *= DASH_DAMPING
-		if speed.length() <= DASH_END_THRESHOLD: dashing = false
+		if speed.length() <= DASH_END_THRESHOLD: end_dash()
 		return
 	
 	var dash_pressed = Input.is_action_just_released("ui_accept")
 	var cant_start_dash = no_dash_power()
-	if not dash_pressed or cant_start_dash: return
+	if not dash_pressed: return
+	if cant_start_dash: 
+		body.give_feedback("no dash power!")
+		return
 	
+	start_dash()
+
+func start_dash():
 	speed = get_facing_vec() * DASH_SPEED
 	dashing = true
+	cell_hits_cur_dash = 0
 	change_dash_meter(-1)
-	recheck_area()
+	recheck_areas()
+	dash_particles.set_emitting(true)
+	
+	audio_dash.play_from_list(["dash_1", "dash_2", "dash_3"])
+
+func end_dash():
+	dashing = false
+	dash_particles.set_emitting(false)
 
 func check_move():
 	if not GDict.cfg.movement_enabled: return
@@ -65,8 +98,19 @@ func check_move():
 	var movement = input_vec * BASE_SPEED
 	speed = movement
 
+func standing_still():
+	return speed.length() <= 0.5
+
 func apply_move():
 	body.velocity = speed
+	
+	if standing_still(): 
+		walk_particles.set_emitting(false)
+		audio_walk.stop()
+	else: 
+		walk_particles.set_emitting(true)
+		audio_walk.play()
+	
 	body.move_and_slide()
 	
 func apply_move_old(dt, iter = 0):
@@ -93,19 +137,24 @@ func apply_move_old(dt, iter = 0):
 func move_to(pos : Vector2):
 	body.set_position(pos)
 
-func change_dash_meter(dd : int):
+func change_dash_meter(dd : int, feedback : bool = true):
 	dash_power = clamp(dash_power + dd, 0, MAX_DASH_POWER)
+	if feedback: body.give_feedback(str(dd) + " dash!")
 	emit_signal("dash_changed", dash_power)
 
 func empty_dash_meter():
-	change_dash_meter(-dash_power)
+	body.give_feedback("dash emptied!")
+	change_dash_meter(-dash_power, false)
 
 func get_dash_meter() -> int:
 	return dash_power
 
-func recheck_area():
-	for other_body in area.get_overlapping_bodies():
+func recheck_areas():
+	for other_body in player_area.get_overlapping_bodies():
 		_on_area_2d_body_entered(other_body)
+	
+	for other_body in cell_area.get_overlapping_bodies():
+		_on_cell_area_body_entered(other_body)
 
 func ignore_area_hits(other_body) -> bool:
 	var ignore_hit = false
@@ -118,9 +167,20 @@ func ignore_area_hits(other_body) -> bool:
 func _on_area_2d_body_entered(other_body):
 	if ignore_area_hits(other_body): return
 	if not other_body.is_in_group("Clients"): return
-	other_body.get_mod("state").on_hit_by_player(body)
+	var success = other_body.get_mod("state").on_hit_by_player(body)
+	if success: audio_dash.play_from_list(["client_hit"])
 
 func _on_cell_area_body_entered(other_body):
 	if ignore_area_hits(other_body): return
+	
+	var too_many_cells_already_hit = cell_hits_cur_dash >= GDict.cfg.max_cell_hits_per_dash
+	if too_many_cells_already_hit: return
+	
+	var not_enough_dash = (get_dash_meter() < GDict.cfg.min_dash_required_for_destroying)
+	if not_enough_dash: return
+	
 	if not other_body.is_in_group("Cells"): return
-	other_body.on_hit_by_player(body)
+	var success = other_body.on_hit_by_player(body)
+	if success: 
+		audio_dash.play_from_list(["destruct"])
+		cell_hits_cur_dash += 1
