@@ -5,6 +5,7 @@ const MAX_FLOOR_COLOR_VAR : float = 0.15
 const OVERLAY_SCALE : float = 0.5
 @onready var col_shape = $CollisionShape2D
 @onready var buyable_icon = $Overlay/IngredientIcon
+@onready var coin_list = $CoinList
 @onready var layers = {
 	"bg": $BG,
 	"overlay": $Overlay
@@ -25,7 +26,7 @@ func sync_position_to_data(map):
 		set_rotation(rot * 0.5 * PI)
 	
 	var at_floor_level = dict_data.has("overlay_on_floor")
-	if at_floor_level:
+	if at_floor_level and layers.overlay:
 		layers.floor = layers.overlay
 		layers.erase("overlay")
 
@@ -68,19 +69,26 @@ func sync_type_to_data():
 	if not show_overlay: overlay_node.hide()
 	
 	buyable_icon.hide()
-	var is_buyable = dict_data.has("buyable")
-	if is_buyable:
+	var show_item = dict_data.has("show_item")
+	if show_item:
 		buyable_icon.show()
 		buyable_icon.set_frame(GDict.ingredients[data.buyable].frame)
-	
+
+func sync_number_to_data():
+	coin_list.hide()
+	if data.get_num() <= 0: return
+	coin_list.show()
+	coin_list.draw(data.get_num())
+
 func sync_visuals_to_data(map):
 	sync_position_to_data(map)
 	sync_floor_to_data(map)
 	sync_type_to_data()
+	sync_number_to_data()
 
 func on_hit_by_player(p) -> bool:
-	var buyable = GDict.cell_types[data.type].has("buyable")
-	var ignore_player_hits = (not buyable) or (not GDict.cfg.dash_destroys_tiles)
+	var destroyable = GDict.cell_types[data.type].has("destroyable")
+	var ignore_player_hits = (not destroyable) or (not GDict.cfg.dash_destroys_tiles)
 	if ignore_player_hits: return false
 	
 	data.set_type(Enums.CellType.EMPTY)

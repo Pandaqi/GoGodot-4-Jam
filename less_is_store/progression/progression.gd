@@ -13,7 +13,8 @@ const WIN_IMAGE = "win"
 const LOSS_IMAGE = "loss"
 
 const DEBUG_DURATION_SCALE : float = 1.0 #DEBUGGING; should be 1
-const DEBUG_NO_IMAGES : bool = false
+const DEBUG_NO_IMAGES : bool = false #DEBUGGING; should be false
+const DEBUG_GAME_OVER : bool = false #DEBUGGING; should be false
 
 @onready var tut_img : TextureRect = $Control/MarginContainer/Tutorial
 @onready var timer : Timer = $Timer
@@ -44,10 +45,10 @@ func prepare_cfg():
 		cfg[key] = GDict.base_cfg[key]
 	GDict.cfg = cfg
 
-func on_score_changed(new_score):
+func on_score_changed(_new_score):
 	check_game_over()
 
-func on_cell_changed(new_cell):
+func on_cell_changed(_new_cell):
 	check_game_over()
 
 func check_game_over():
@@ -130,6 +131,12 @@ func is_busy() -> bool:
 func _input(ev):
 	if not active: return
 	if is_busy(): return
+	
+	if DEBUG_GAME_OVER:
+		if ev.is_action_released("ui_accept"):
+			goto_game_over(true)
+			return
+	
 	if ev.is_action_released("ui_accept"):
 		if game_over: return restart()
 		anim_player.play_backwards("appear")
@@ -153,10 +160,10 @@ func get_factor():
 func get_time_played() -> String:
 	var time = float(clock)
 	var minutes = floor(time / 60)
-	if minutes < 0: minutes = "0" + str(minutes)
+	if minutes < 10: minutes = "0" + str(minutes)
 	
-	var seconds = floor(time) % 60
-	if seconds < 0: seconds = "0" + str(seconds)
+	var seconds = int(floor(time)) % 60
+	if seconds < 10: seconds = "0" + str(seconds)
 	
 	return str(minutes) + ":" + str(seconds)
 

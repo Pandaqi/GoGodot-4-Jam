@@ -6,5 +6,20 @@ enum CellType {
 	ENTRANCE,
 	CHECKOUT,
 	BUYABLE,
-	WALL
+	WALL,
+	SALE
+}
+
+enum Item {
+	EMPTY_SLOT,
+	TOMATO,
+	CARROT,
+	BLUEBERRY
+}
+
+enum Client {
+	BASIC,
+	KID,
+	THIEF,
+	ELDERLY
 }

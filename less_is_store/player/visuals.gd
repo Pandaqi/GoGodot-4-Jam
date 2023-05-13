@@ -4,7 +4,7 @@ extends Node2D
 @onready var anim_player : AnimationPlayer = $AnimationPlayer
 @onready var sprite : Sprite2D = $Sprite2D
 
-func _physics_process(dt):
+func _physics_process(_dt):
 	check_speed()
 
 func check_speed():

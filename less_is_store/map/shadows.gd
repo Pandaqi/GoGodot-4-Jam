@@ -7,7 +7,7 @@ func _ready():
 	modulate.a = SHADOW_OPACITY
 	scale.y = SHADOW_Y_SCALE
 
-func _physics_process(dt):
+func _physics_process(_dt):
 	queue_redraw()
 
 func _draw():

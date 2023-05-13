@@ -14,12 +14,12 @@ func _physics_process(dt):
 
 func center(dt):
 	var ui_compensate = Vector2.UP*TOP_OFFSET
-	var center = 0.5 * (bounds.top_left + bounds.bottom_right) + ui_compensate
+	var desired_pos = 0.5 * (bounds.top_left + bounds.bottom_right) + ui_compensate
 	var size = bounds.bottom_right - bounds.top_left + 2*EDGE_MARGIN
 	var vp = get_viewport().size
 	
 	var factor = LERP_SPEED * dt
-	var new_pos = lerp(get_position(), center, factor)
+	var new_pos = lerp(get_position(), desired_pos, factor)
 	set_position(new_pos)
 	
 	var wanted_zoom = Vector2(vp) / size

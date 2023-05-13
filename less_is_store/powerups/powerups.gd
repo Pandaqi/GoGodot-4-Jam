@@ -49,6 +49,7 @@ func get_valid_cell():
 
 func on_added(po):
 	var cell = get_valid_cell()
-	po.set_position(cell.visual.get_position())
+	var base_pos = cell.visual.get_position()
+	po.set_position(base_pos)
 	
 	get_map().layers.overlay.call_deferred("add_child", po)

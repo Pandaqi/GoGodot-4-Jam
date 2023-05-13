@@ -38,7 +38,7 @@ func no_input() -> bool:
 func get_speed() -> Vector2:
 	return speed
 
-func _physics_process(dt: float):
+func _physics_process(_dt: float):
 	check_move()
 	check_dash()
 	apply_move()
@@ -156,7 +156,7 @@ func recheck_areas():
 	for other_body in cell_area.get_overlapping_bodies():
 		_on_cell_area_body_entered(other_body)
 
-func ignore_area_hits(other_body) -> bool:
+func ignore_area_hits(_other_body) -> bool:
 	var ignore_hit = false
 	if GDict.cfg.touch_stops_people: ignore_hit = false
 	if (GDict.cfg.dash_stops_people or GDict.cfg.dash_reduces_backpack) and not dashing:

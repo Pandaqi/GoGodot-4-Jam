@@ -48,37 +48,76 @@ var cell_types = {
 	Enums.CellType.BUYABLE: {
 		"frame": 3,
 		"buyable": true,
-		"overlay": true
+		"show_item": true,
+		"overlay": true,
+		"destroyable": true
+	},
+	
+	Enums.CellType.SALE: {
+		"frame": 5,
+		"overlay": true,
+		"show_item": true,
+		"number": true,
+		"destroyable": true
 	}
 }
 
 var ingredients = {
-	"empty_slot": {
+	Enums.Item.EMPTY_SLOT: {
 		"frame": 0,
 		"unpickable": true
 	},
 	
-	"tomato": {
+	Enums.Item.TOMATO: {
 		"frame": 1
 	},
 	
-	"carrot": {
+	Enums.Item.CARROT: {
 		"frame": 2
 	},
 	
-	"blueberry": {
+	Enums.Item.BLUEBERRY: {
 		"frame": 3
 	}
 }
 
+var clients = {
+	# nothing special
+	Enums.Client.BASIC: {
+		"spritesheet": "basic"
+	},
+	
+	# tiny backpack + huge speed
+	Enums.Client.KID: {
+		"spritesheet": "kid",
+		"backpack_size": { "min": 1, "max": 1 },
+		"speed_factor": 1.66
+	},
+	
+	# leaves without paying
+	Enums.Client.THIEF: {
+		"spritesheet": "thief",
+		"leave_without_paying": true
+	},
+	
+	# very slow walking
+	Enums.Client.ELDERLY: {
+		"spritesheet": "elderly",
+		"speed_factor": 0.33,
+		"anim_speed": 0.5
+	}
+}
+
 var stages = [
+	
 	# WASD + touch to remove
 	{
-		"frame": 0,
 		"duration": 20,
 		"backpack_size": { "min": 1, "max": 1 },
 		"num_clients": { "min": 1, "max": 2 },
 		"num_powerups": { "min": 0, "max": 0 },
+		"client_types": [Enums.Client.BASIC],
+		"num_sales": 0,
 		"max_score": 6,
 		"movement_enabled": true,
 		"dash_enabled": false,
@@ -88,36 +127,52 @@ var stages = [
 		"dash_destroys_tiles": false
 	},
 	
+	# collect dash powerups + dash to remove
 	{
-		"frame": 1,
-		"duration": 90,
+		"duration": 60,
 		"backpack_size": { "min": 1, "max": 2 },
 		"num_clients": { "min": 2, "max": 4 },
 		"num_powerups": { "min": 2, "max": 5 },
+		"client_types": [Enums.Client.BASIC, Enums.Client.ELDERLY, Enums.Client.KID],
 		"max_score": 10,
 		"dash_enabled": true,
 		"touch_stops_people": false,
-		"dash_stops_people": true
+		"dash_stops_people": true,
+		"num_sales": 1
 	},
 	
+	# dash destroys tiles
 	{
-		"frame": 2,
-		"duration": 135,
-		"backpack_size": { "min": 1, "max": 3 },
-		"num_clients": { "min": 3, "max": 7 },
-		"num_powerups": { "min": 4, "max": 6 },
-		"max_score": 14,
-		"dash_stops_people": false,
-		"dash_reduces_backpack": true
-	},
-	
-	{
-		"frame": 3,
+		"frame": 60,
 		"duration": 180,
-		"backpack_size": { "min": 1, "max": 4 },
-		"num_clients": { "min": 5, "max": 10 },
-		"num_powerups": { "min": 6, "max": 10 },
+		"backpack_size": { "min": 1, "max": 3 },
+		"num_clients": { "min": 3, "max": 6 },
+		"num_powerups": { "min": 4, "max": 6 },
+		"client_types": [Enums.Client.BASIC, Enums.Client.ELDERLY, Enums.Client.KID],
+		"max_score": 14,
 		"dash_destroys_tiles": true,
-		"max_score": 20
-	}
+	},
+	
+	# adds the THIEF character
+	{
+		"duration": 45,
+		"num_clients": { "min": 4, "max": 7 },
+		"num_powerups": { "min": 5, "max": 8 },
+		"client_types": [Enums.Client.BASIC, Enums.Client.ELDERLY, Enums.Client.KID, Enums.Client.THIEF],
+		"max_score": 18,
+		"num_sales": 2
+	},
+	
+	# dash merely lowers backpack size
+	{
+		"duration": 60,
+		"backpack_size": { "min": 1, "max": 4 },
+		"num_clients": { "min": 5, "max": 8 },
+		"num_powerups": { "min": 6, "max": 10 },
+		"max_score": 20,
+		"dash_stops_people": false,
+		"dash_reduces_backpack": true,
+	},
+	
+	
 ]

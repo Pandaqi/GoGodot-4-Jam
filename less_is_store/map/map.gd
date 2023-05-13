@@ -1,5 +1,7 @@
 extends Node2D
 
+@onready var main_node = get_parent()
+
 const MAP_SIZE : Vector2i = Vector2i(16, 9)
 const CELL_SIZE : Vector2 = Vector2(128, 128)
 const MIN_GENERATION_PATH_LENGTH : int = 8
@@ -7,6 +9,7 @@ const MIN_PERCENTAGE_FILLED : float = 0.4
 const MAX_RANDOM_WALK_TRIES : int = 500
 const MAX_ENTRANCES : int = 4
 const MAX_CHECKOUTS : int = 6
+const MAX_DIST_TO_CHECKOUT : float = 11.5 # this is MANHATTAN dist, not EULER
 var grid : Array
 var grid_flat : Array
 var grid_visual : Array
@@ -31,10 +34,22 @@ var floor_color : Color
 signal cell_changed(cell)
 
 func activate():
+	main_node.get_mod("progression").connect("state_changed", on_state_changed)
+	
 	determine_available_buyables()
 	determine_floor_color()
 	load_map()
 	generation_done = true
+
+func on_state_changed():
+	add_sales_if_needed()
+
+func add_sales_if_needed():
+	var sales = get_cells_of_type(Enums.CellType.SALE)
+	var num_sales = sales.size()
+	while num_sales < GDict.cfg.num_sales:
+		turn_random_cell_into_sale_sign()
+		num_sales += 1
 
 func generation_is_done() -> bool:
 	return generation_done
@@ -42,7 +57,6 @@ func generation_is_done() -> bool:
 func determine_floor_color():
 	floor_color = Color.from_hsv(randf_range(0,360), 0.3, 0.8)
 
-# @TODO: not sure if I want to do any filtering here
 func determine_available_buyables():
 	var all = GDict.ingredients.keys()
 	var list = []
@@ -55,6 +69,7 @@ func load_map():
 	create_grid()
 	create_pathfinding_map()
 	walk_through_grid()
+	finish_grid()
 	draw_grid()
 	add_walls()
 
@@ -157,9 +172,9 @@ func shake_cells_with_type_assigned(list):
 	return new_list
 
 func create_pathfinding_map():
-	var grid = get_grid_flat()
+	var list = get_grid_flat()
 	
-	for cell in grid:
+	for cell in list:
 		var nbs = get_neighbors(cell)
 		for nb in nbs:
 			astar.connect_points(cell.id, nb.id, true)
@@ -237,11 +252,34 @@ func place_objects_next_to_path(path):
 		var changed_cell = place_object_next_to_cell(cell, type)
 		if changed_cell.is_invalid(): continue
 		
-		var is_buyable = changed_cell.type == Enums.CellType.BUYABLE
-		if is_buyable:
+		if is_buyable(changed_cell):
 			changed_cell.set_buyable(get_random_buyable())
 
-func get_random_buyable():
+func finish_grid():
+	pass
+
+func turn_random_cell_into_sale_sign():
+	print("Wanna turn random cell into sale")
+	
+	var buyables = get_cells_of_type(Enums.CellType.BUYABLE)
+	var sales = get_cells_of_type(Enums.CellType.SALE)
+	var types_already_used = []
+	for sale in sales:
+		types_already_used.append(sale.get_buyable())
+	
+	var valid_buyables = []
+	for buyable in buyables:
+		if types_already_used.has(buyable.get_buyable()): continue
+		valid_buyables.append(buyable)
+	
+	if valid_buyables.size() <= 0: return
+	
+	print("Should turn random cell into sale")
+	
+	var rand_buyable = valid_buyables.pick_random()
+	change_cell_type(rand_buyable, Enums.CellType.SALE)
+
+func get_random_buyable() -> Enums.Item:
 	return available_buyables.pick_random()
 
 # TO DO: re-use existing cells from time to time??
@@ -265,12 +303,18 @@ func place_object_next_to_cell(cell : Cell, type : Enums.CellType) -> Cell:
 
 func change_cell_type(cell : Cell, type : Enums.CellType):
 	cell.set_type(type)
+	
+	if needs_number(cell):
+		cell.set_num(randi_range(2,4))
 
 	if is_passthrough(cell):
 		astar.set_point_disabled(cell.id, false)
 		astar.set_point_weight_scale(cell.id, 0.01)
 	else: 
 		astar.set_point_disabled(cell.id, true)
+	
+	if generation_is_done():
+		cell.visual.sync_visuals_to_data(self)
 	
 	emit_signal("cell_changed", cell)
 
@@ -284,6 +328,10 @@ func get_rotation_index_for_edge(cell : Cell) -> int:
 func is_buyable(cell : Cell) -> bool:
 	if cell.is_invalid(): return false
 	return GDict.cell_types[cell.type].has("buyable")
+
+func needs_number(cell : Cell) -> bool:
+	if cell.is_invalid(): return false
+	return GDict.cell_types[cell.type].has("number")
 
 func is_passthrough(cell : Cell) -> bool:
 	if cell.is_invalid(): return false
@@ -385,11 +433,26 @@ func get_cell_next_to(type):
 	var option = options.pick_random()
 	return get_passthrough_cell_next_to_another(option)
 
+func get_within_manhattan_distance(pos : Vector2i, list : Array, dist : float):
+	var valid_list = []
+	for elem in list:
+		var elem_pos = elem.grid_pos
+		var elem_dist = abs(pos.x - elem_pos.x) + abs(pos.y - elem_pos.y)
+		if elem_dist > dist: continue
+		valid_list.append(elem)
+	return valid_list
+
 func get_entrance():
 	return get_cells_of_type(Enums.CellType.ENTRANCE).pick_random()
 
-func get_checkout():
-	return get_cells_of_type(Enums.CellType.CHECKOUT).pick_random()
+func get_checkout(node = null):
+	var all = get_cells_of_type(Enums.CellType.CHECKOUT)
+	if node != null:
+		var grid_pos = get_cell_for_node(node).grid_pos
+		var valid = get_within_manhattan_distance(grid_pos, all, MAX_DIST_TO_CHECKOUT)
+		if valid.size() > 0: return valid.pick_random()
+	
+	return all.pick_random()
 
 
 		

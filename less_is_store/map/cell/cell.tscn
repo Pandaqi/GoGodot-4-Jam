@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://cmoarxbtn5nt"]
+[gd_scene load_steps=6 format=3 uid="uid://cmoarxbtn5nt"]
 
 [ext_resource type="Script" path="res://less_is_store/map/cell/cell.gd" id="1_lk2n4"]
 [ext_resource type="Texture2D" uid="uid://33qdna17b2tu" path="res://less_is_store/map/cell/cell_overlays.webp" id="2_2mlsy"]
 [ext_resource type="PackedScene" uid="uid://b8ydhr0mu2as" path="res://less_is_store/ingredients/ingredient_icon.tscn" id="3_us3kr"]
+[ext_resource type="Script" path="res://less_is_store/map/cell/coin_list.gd" id="4_wawmt"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_b11qp"]
 size = Vector2(128, 128)
@@ -29,3 +30,9 @@ hframes = 8
 
 [node name="IngredientIcon" parent="Overlay" instance=ExtResource("3_us3kr")]
 scale = Vector2(0.5, 0.5)
+
+[node name="CoinList" type="Node2D" parent="."]
+position = Vector2(0, -7)
+script = ExtResource("4_wawmt")
+
+[node name="Container" type="Node2D" parent="CoinList"]

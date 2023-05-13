@@ -299,7 +299,7 @@ expand_mode = 3
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-theme_override_constants/margin_top = 150
+theme_override_constants/margin_top = 180
 
 [node name="Label" type="Label" parent="Progression/Control/MarginContainer/MarginContainer"]
 layout_mode = 2

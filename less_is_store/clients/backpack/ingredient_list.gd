@@ -5,11 +5,11 @@ extends Node2D
 const ICON_SIZE : Vector2 = Vector2(256,256)
 const SCALE : float = 0.25
 var icons = []
-var num_slots : int = -1
 
-var offset : Vector2 = Vector2(0,-125)
+var offset : Vector2 = Vector2(0,-164)
 var backpack
 var active : bool = true
+var EMPTY_SLOT_FRAME = GDict.ingredients[Enums.Item.EMPTY_SLOT].frame
 
 func activate(b):
 	backpack = b
@@ -44,19 +44,18 @@ func visualize(content, num_slots = -1):
 		icon.set_visible(true)
 	
 	if num_slots >= 0:
-		var empty_slot_frame = GDict.ingredients.empty_slot.frame
 		for i in range(content.size(), num_slots):
 			var icon = icons[i]
-			icon.set_frame(empty_slot_frame)
+			icon.set_frame(EMPTY_SLOT_FRAME)
 			icon.set_visible(true)
 		icons_shown = num_slots
 	
 	var half_size = 0.5*(icons_shown - 1)
-	var offset = -half_size*ICON_SIZE.x*Vector2.RIGHT
-	container.set_position(offset)
+	var container_offset = -half_size*ICON_SIZE.x*Vector2.RIGHT
+	container.set_position(container_offset)
 	set_scale(Vector2.ONE*SCALE)
 
-func _physics_process(dt):
+func _physics_process(_dt):
 	if not active: return
 	
 	var pos_2d = backpack.global_transform.origin

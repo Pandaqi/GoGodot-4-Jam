@@ -10,7 +10,7 @@ func add_force(extra_force : Vector2):
 func has_force() -> bool:
 	return force.length() >= 1
 
-func _physics_process(dt: float):
+func _physics_process(_dt: float):
 	if not has_force(): return
 	
 	force *= DAMPING

@@ -11,7 +11,7 @@ func place_players():
 	for i in range(num_players):
 		place_player(i)
 
-func place_player(idx : int):
+func place_player(_idx : int):
 	var p = player_scene.instantiate()
 	var map = main_node.get_mod("map")
 	var start_cell = map.get_cells_of_type(Enums.CellType.EMPTY).pick_random()

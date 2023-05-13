@@ -26,6 +26,7 @@ const KNOCKBACK_FORCE : float = 400.0
 
 @onready var body = get_parent()
 var state : State
+var type : Enums.Client
 
 func activate():
 	audio_player.activate(AUDIO_CONFIG)
@@ -36,6 +37,10 @@ func activate():
 	
 	body.get_mod("path_walker").connect("arrived", on_walking_arrived)
 	change_state_to(State.WALKING)
+
+func set_type(t : Enums.Client):
+	type = t
+	body.get_mod("visuals").on_type_changed(t)
 
 func is_stunned() -> bool:
 	return state == State.STUNNED
@@ -50,20 +55,26 @@ func get_cur_cell() -> Cell:
 func change_state_to(new_state):
 	state = new_state
 	
+	stun_timer.stop()
+	grab_timer.stop()
+	
 	if new_state == State.ARRIVING or new_state == State.LEAVING:
 		appear_particles.set_emitting(true)
 	
 	if is_inactive(): return
 	
 	anim_player.play("idle")
-	stun_timer.stop()
-	grab_timer.stop()
-	
 	if state == State.WALKING:
+		var speed_scale = 1.0
+		if body.get_data().has("anim_speed"): speed_scale = body.get_data().anim_speed
+		
+		anim_player.speed_scale = speed_scale
+		anim_player.play("run")
+		
 		var our_cell = get_cur_cell()
 		var target_cell = get_map().get_cell_next_to(Enums.CellType.BUYABLE)
 		var head_to_checkout = body.get_mod("backpack").is_full()
-		if head_to_checkout: target_cell = get_map().get_checkout()
+		if head_to_checkout: target_cell = get_map().get_checkout(body)
 		
 		var path = get_map().get_path_to_cell(our_cell, target_cell)
 		if(path.size() <= 2): return change_state_to(State.GRABBING)
@@ -130,6 +141,8 @@ func _on_stun_timer_timeout():
 	change_state_to(State.WALKING)
 
 func leave(pay : bool = false):
+	if body.get_data().has("leave_without_paying"): pay = false
+	
 	if pay: 
 		audio_player.play_from_list(["coins"])
 		coin_particles.set_emitting(true)

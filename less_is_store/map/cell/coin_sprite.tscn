@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bp1twy8rc3w1f"]
+
+[ext_resource type="Texture2D" uid="uid://otvjqlsed4sb" path="res://less_is_store/clients/particle_coin.webp" id="1_hstxn"]
+
+[node name="Sprite2D" type="Sprite2D"]
+texture = ExtResource("1_hstxn")

@@ -5,7 +5,7 @@ var cur_path : Array = []
 var active : bool = false
 
 const MAX_ERROR_POINT_RADIUS : float = 5.0
-const SPEED_BOUNDS : Dictionary = { "min": 100, "max": 180 }
+const SPEED_BOUNDS : Dictionary = { "min": 120, "max": 160 }
 var speed : float = 0.0
 const DEBUG : bool = false #DEBUGGING (should be false)
 
@@ -15,9 +15,17 @@ const AUDIO_WALK_CONFIG = { "onoff": true, "stream": preload("res://less_is_stor
 
 signal arrived
 
-func _ready():
-	speed = randf_range(SPEED_BOUNDS.min, SPEED_BOUNDS.max)
+func activate():
+	determine_walking_speed()
+	
 	audio_walk.activate(AUDIO_WALK_CONFIG)
+
+func determine_walking_speed():
+	var speed_factor = 1.0
+	if body.get_data().has("speed_factor"): speed_factor = body.get_data().speed_factor
+	
+	speed = randf_range(SPEED_BOUNDS.min, SPEED_BOUNDS.max)
+	speed *= speed_factor
 
 func has_path():
 	return cur_path.size() > 0
@@ -50,7 +58,7 @@ func check_if_arrived():
 	stop_following()
 	emit_signal("arrived")
 
-func continue_on_path(dt):
+func continue_on_path(_dt):
 	var vec = (get_next_point() - body.get_position()).normalized()
 	var movement = vec * speed
 	
