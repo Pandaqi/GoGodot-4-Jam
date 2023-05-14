@@ -24,8 +24,21 @@ func refresh():
 	controlled_placement.set_num_bounds(GDict.cfg.num_clients)
 	controlled_placement.check_elements()
 
-func get_random_type():
-	return GDict.cfg.client_types.pick_random()
+func get_num_of_type(tp: Enums.Client) -> int:
+	var all_clients : Array = get_tree().get_nodes_in_group("Clients")
+	var sum : int = 0
+	for client in all_clients:
+		if client.get_mod("state").get_type() != tp: continue
+		sum += 1
+	return sum
+
+func get_random_type() -> Enums.Client:
+	var rand_type = GDict.cfg.client_types.pick_random()
+	var num_of_type = get_num_of_type(rand_type)
+	var max_of_type = GDict.clients[rand_type].max_allowed
+	if num_of_type >= max_of_type:
+		rand_type = Enums.Client.BASIC
+	return rand_type
 
 func on_added(client):
 	var map = main_node.get_mod("map")
@@ -50,6 +63,8 @@ func get_score_for_client(client) -> int:
 	var sum = 0
 	for elem in client.get_mod("backpack").get_content():
 		sum += get_score_for_item(elem.buyable)
+	
+	if client.get_data().has("leave_without_paying"): sum *= -1
 	return sum
 
 func on_client_scored(client):

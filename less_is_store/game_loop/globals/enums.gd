@@ -14,7 +14,9 @@ enum Item {
 	EMPTY_SLOT,
 	TOMATO,
 	CARROT,
-	BLUEBERRY
+	BLUEBERRY,
+	PEAR,
+	BEETROOT
 }
 
 enum Client {

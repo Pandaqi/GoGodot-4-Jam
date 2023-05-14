@@ -16,8 +16,9 @@ const STUN_TIMER_BOUNDS = { "min": 3.0, "max": 8 }
 @onready var grab_timer : Timer = $GrabTimer
 const GRAB_TIMER_BOUNDS = { "min": 1.0, "max": 3.5 }
 
-const AUDIO_CONFIG = { "dir": "res://less_is_store/clients/sounds/" }
-@onready var audio_player = $AudioPlayer
+#const AUDIO_CONFIG = { "dir": "res://less_is_store/clients/sounds/" }
+@onready var audio_player_coins = $AudioPlayerCoins
+@onready var audio_player_leave = $AudioPlayerLeave
 
 @onready var appear_particles = $AppearParticles
 @onready var coin_particles = $CoinParticles
@@ -29,7 +30,7 @@ var state : State
 var type : Enums.Client
 
 func activate():
-	audio_player.activate(AUDIO_CONFIG)
+	#audio_player.activate(AUDIO_CONFIG)
 	
 	change_state_to(State.ARRIVING)
 	anim_player.play("appear")
@@ -42,6 +43,9 @@ func set_type(t : Enums.Client):
 	type = t
 	body.get_mod("visuals").on_type_changed(t)
 
+func get_type() -> Enums.Client:
+	return type
+
 func is_stunned() -> bool:
 	return state == State.STUNNED
 
@@ -51,12 +55,15 @@ func get_map():
 func get_cur_cell() -> Cell:
 	return get_map().get_cell_for_node(body)
 
-# TODO: also start/stop proper animations and stuff
+func stop_current_state():
+	stun_timer.stop()
+	grab_timer.stop()
+	body.get_mod("path_walker").stop_following()
+
 func change_state_to(new_state):
 	state = new_state
 	
-	stun_timer.stop()
-	grab_timer.stop()
+	stop_current_state()
 	
 	if new_state == State.ARRIVING or new_state == State.LEAVING:
 		appear_particles.set_emitting(true)
@@ -141,16 +148,16 @@ func _on_stun_timer_timeout():
 	change_state_to(State.WALKING)
 
 func leave(pay : bool = false):
-	if body.get_data().has("leave_without_paying"): pay = false
+	change_state_to(State.LEAVING)	
 	
 	if pay: 
-		audio_player.play_from_list(["coins"])
+		audio_player_coins.pitch_scale = 1.0 + randf_range(-0.05, 0.05)
+		audio_player_coins.play()
 		coin_particles.set_emitting(true)
 		body.emit_signal("score", body)
 	else:
-		audio_player.play_from_list(["leave_bad"])
+		audio_player_leave.play()
 	
-	change_state_to(State.LEAVING)	
 	anim_player.play_backwards("appear")
 
 

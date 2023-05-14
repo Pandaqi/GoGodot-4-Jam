@@ -18,9 +18,11 @@ var dash_power : int = 0
 var cell_hits_cur_dash : int = 0
 
 const AUDIO_WALK_CONFIG = { "onoff": true, "stream": preload("res://less_is_store/player/sounds/walk_1.ogg"), "volume": -6 }
-const AUDIO_CONFIG = { "dir": "res://less_is_store/player/sounds" }
+# const AUDIO_CONFIG = { "dir": "res://less_is_store/player/sounds" }
 @onready var audio_walk = $AudioWalk
-@onready var audio_dash = $AudioDash
+@onready var audio_player_dash = $AudioPlayerDash
+@onready var audio_player_hit = $AudioPlayerHit
+@onready var audio_player_destruct = $AudioPlayerDestruct
 
 @onready var walk_particles = $WalkParticles
 @onready var dash_particles = $DashParticles
@@ -29,7 +31,7 @@ signal dash_changed
 
 func _ready():
 	audio_walk.activate(AUDIO_WALK_CONFIG)
-	audio_dash.activate(AUDIO_CONFIG)
+	#audio_dash.activate(AUDIO_CONFIG)
 	end_dash()
 
 func no_input() -> bool:
@@ -78,7 +80,8 @@ func start_dash():
 	recheck_areas()
 	dash_particles.set_emitting(true)
 	
-	audio_dash.play_from_list(["dash_1", "dash_2", "dash_3"])
+	#audio_dash.play_from_list(["dash_1", "dash_2", "dash_3"])
+	audio_player_dash.play()
 
 func end_dash():
 	dashing = false
@@ -168,7 +171,9 @@ func _on_area_2d_body_entered(other_body):
 	if ignore_area_hits(other_body): return
 	if not other_body.is_in_group("Clients"): return
 	var success = other_body.get_mod("state").on_hit_by_player(body)
-	if success: audio_dash.play_from_list(["client_hit"])
+	if success: 
+		audio_player_hit.pitch_scale = 1.0 + randf_range(-0.05, 0.05)
+		audio_player_hit.play()
 
 func _on_cell_area_body_entered(other_body):
 	if ignore_area_hits(other_body): return
@@ -182,5 +187,5 @@ func _on_cell_area_body_entered(other_body):
 	if not other_body.is_in_group("Cells"): return
 	var success = other_body.on_hit_by_player(body)
 	if success: 
-		audio_dash.play_from_list(["destruct"])
+		audio_player_destruct.play()
 		cell_hits_cur_dash += 1

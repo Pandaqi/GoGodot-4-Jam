@@ -4,8 +4,8 @@ var stage : int = -1
 var active : bool = false
 var at_max_stage : bool = false
 
-const DEBUG_DURATION_SCALE : float = 0.33 #DEBUGGING
-const DEBUG_NO_IMAGES : bool = false
+const DEBUG_DURATION_SCALE : float = 1.0 #DEBUGGING; should be 1.0
+const DEBUG_NO_IMAGES : bool = false #DEBUGGING; should be false
 
 @onready var tut_img : TextureRect = $Control/Tutorial
 @onready var timer : Timer = $Timer

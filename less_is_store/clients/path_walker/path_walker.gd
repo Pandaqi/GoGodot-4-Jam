@@ -11,7 +11,7 @@ const DEBUG : bool = false #DEBUGGING (should be false)
 
 const AUDIO_WALK_CONFIG = { "onoff": true, "stream": preload("res://less_is_store/player/sounds/walk_1.ogg"), "volume": -12 }
 @onready var audio_walk = $AudioWalk
-@onready var walk_particles : GPUParticles2D = $WalkParticles
+@onready var walk_particles : CPUParticles2D = $WalkParticles
 
 signal arrived
 

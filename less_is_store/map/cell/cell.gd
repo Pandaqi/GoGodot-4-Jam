@@ -11,6 +11,7 @@ const OVERLAY_SCALE : float = 0.5
 	"overlay": $Overlay
 }
 
+signal changed(cell)
 signal removed
 
 func get_real_pos(cell_size : Vector2):
@@ -91,13 +92,16 @@ func on_hit_by_player(p) -> bool:
 	var ignore_player_hits = (not destroyable) or (not GDict.cfg.dash_destroys_tiles)
 	if ignore_player_hits: return false
 	
-	data.set_type(Enums.CellType.EMPTY)
-	sync_type_to_data()
-	
 	if GDict.cfg.destroying_tiles_empties_dash:
 		p.get_mod("mover").empty_dash_meter()
 	
+	change_to_empty()
 	return true
+
+func change_to_empty():
+	data.set_type(Enums.CellType.EMPTY)
+	sync_type_to_data()
+	emit_signal("changed", self)
 
 # Never really use this, we only change type
 func remove():

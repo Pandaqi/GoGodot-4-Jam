@@ -78,33 +78,46 @@ var ingredients = {
 	
 	Enums.Item.BLUEBERRY: {
 		"frame": 3
+	},
+	
+	Enums.Item.PEAR: {
+		"frame": 4
+	},
+	
+	Enums.Item.BEETROOT: {
+		"frame": 5
 	}
 }
 
 var clients = {
 	# nothing special
 	Enums.Client.BASIC: {
-		"spritesheet": "basic"
+		"spritesheet": "basic",
+		"max_allowed": INF
 	},
 	
 	# tiny backpack + huge speed
 	Enums.Client.KID: {
 		"spritesheet": "kid",
 		"backpack_size": { "min": 1, "max": 1 },
-		"speed_factor": 1.66
+		"speed_factor": 1.66,
+		"max_allowed": 6
 	},
 	
 	# leaves without paying
 	Enums.Client.THIEF: {
 		"spritesheet": "thief",
-		"leave_without_paying": true
+		"leave_without_paying": true,
+		"backpack_size": { "min": 1, "max": 2 },
+		"max_allowed": 2
 	},
 	
 	# very slow walking
 	Enums.Client.ELDERLY: {
 		"spritesheet": "elderly",
-		"speed_factor": 0.33,
-		"anim_speed": 0.5
+		"speed_factor": 0.45,
+		"anim_speed": 0.5,
+		"max_allowed": 3
 	}
 }
 
@@ -112,13 +125,13 @@ var stages = [
 	
 	# WASD + touch to remove
 	{
-		"duration": 20,
+		"duration": 17,
 		"backpack_size": { "min": 1, "max": 1 },
 		"num_clients": { "min": 1, "max": 2 },
 		"num_powerups": { "min": 0, "max": 0 },
 		"client_types": [Enums.Client.BASIC],
 		"num_sales": 0,
-		"max_score": 6,
+		"max_score": 5,
 		"movement_enabled": true,
 		"dash_enabled": false,
 		"touch_stops_people": true,
@@ -129,12 +142,12 @@ var stages = [
 	
 	# collect dash powerups + dash to remove
 	{
-		"duration": 60,
+		"duration": 45,
 		"backpack_size": { "min": 1, "max": 2 },
 		"num_clients": { "min": 2, "max": 4 },
 		"num_powerups": { "min": 2, "max": 5 },
 		"client_types": [Enums.Client.BASIC, Enums.Client.ELDERLY, Enums.Client.KID],
-		"max_score": 10,
+		"max_score": 7,
 		"dash_enabled": true,
 		"touch_stops_people": false,
 		"dash_stops_people": true,
@@ -143,13 +156,12 @@ var stages = [
 	
 	# dash destroys tiles
 	{
-		"frame": 60,
-		"duration": 180,
+		"duration": 45,
 		"backpack_size": { "min": 1, "max": 3 },
 		"num_clients": { "min": 3, "max": 6 },
 		"num_powerups": { "min": 4, "max": 6 },
 		"client_types": [Enums.Client.BASIC, Enums.Client.ELDERLY, Enums.Client.KID],
-		"max_score": 14,
+		"max_score": 10,
 		"dash_destroys_tiles": true,
 	},
 	
@@ -159,17 +171,17 @@ var stages = [
 		"num_clients": { "min": 4, "max": 7 },
 		"num_powerups": { "min": 5, "max": 8 },
 		"client_types": [Enums.Client.BASIC, Enums.Client.ELDERLY, Enums.Client.KID, Enums.Client.THIEF],
-		"max_score": 18,
+		"max_score": 13,
 		"num_sales": 2
 	},
 	
 	# dash merely lowers backpack size
 	{
-		"duration": 60,
+		"duration": 45,
 		"backpack_size": { "min": 1, "max": 4 },
-		"num_clients": { "min": 5, "max": 8 },
+		"num_clients": { "min": 5, "max": 9 },
 		"num_powerups": { "min": 6, "max": 10 },
-		"max_score": 20,
+		"max_score": 16,
 		"dash_stops_people": false,
 		"dash_reduces_backpack": true,
 	},

@@ -316,6 +316,9 @@ func change_cell_type(cell : Cell, type : Enums.CellType):
 	if generation_is_done():
 		cell.visual.sync_visuals_to_data(self)
 	
+	on_cell_changed(cell)
+
+func on_cell_changed(cell):
 	emit_signal("cell_changed", cell)
 
 func get_rotation_index_for_edge(cell : Cell) -> int:
@@ -349,6 +352,8 @@ func draw_grid():
 		cell.visual = c
 		c.sync_visuals_to_data(self)
 		transfer_visual_layers(c)
+		
+		c.connect("changed", on_cell_changed)
 
 func add_walls():
 	var list = []

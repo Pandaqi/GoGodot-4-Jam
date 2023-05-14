@@ -1,18 +1,21 @@
-[gd_scene load_steps=34 format=3 uid="uid://bk7b0rlswynl8"]
+[gd_scene load_steps=27 format=3 uid="uid://bk7b0rlswynl8"]
 
 [ext_resource type="Script" path="res://less_is_store/clients/client.gd" id="1_ckolu"]
 [ext_resource type="Script" path="res://less_is_store/clients/path_walker/path_walker.gd" id="2_5v3iy"]
 [ext_resource type="Script" path="res://less_is_store/clients/state/state.gd" id="2_tmndr"]
 [ext_resource type="Texture2D" uid="uid://d881yb54h3f6" path="res://less_is_store/clients/particle_appear.webp" id="4_vmbl5"]
+[ext_resource type="AudioStream" uid="uid://2wni2okbo7vj" path="res://less_is_store/clients/sounds/coins.ogg" id="5_63wt3"]
 [ext_resource type="Script" path="res://less_is_store/clients/backpack/backpack.gd" id="5_cnsla"]
 [ext_resource type="Texture2D" uid="uid://otvjqlsed4sb" path="res://less_is_store/clients/particle_coin.webp" id="5_d0pkr"]
 [ext_resource type="PackedScene" uid="uid://bghfeuiwyjmlf" path="res://less_is_store/tools/audio_player/audio_player.tscn" id="5_e3icu"]
+[ext_resource type="AudioStream" uid="uid://cbcu1uvsm0lx7" path="res://less_is_store/clients/sounds/leave_bad.ogg" id="5_hwucn"]
 [ext_resource type="PackedScene" uid="uid://cmdg8t10asscc" path="res://less_is_store/player/walk_particles.tscn" id="5_vo6lv"]
 [ext_resource type="Script" path="res://less_is_store/clients/backpack/ingredient_list.gd" id="6_ek4iu"]
 [ext_resource type="Script" path="res://less_is_store/clients/knockback.gd" id="7_a68jm"]
 [ext_resource type="PackedScene" uid="uid://c6wt2xsgxkdh6" path="res://less_is_store/tools/shadow_locator/shadow_locator.tscn" id="8_5aek1"]
 [ext_resource type="Texture2D" uid="uid://beihgqmxwsdw7" path="res://less_is_store/clients/spritesheets/client_kid.webp" id="8_6vx08"]
 [ext_resource type="Script" path="res://less_is_store/clients/visuals/visuals.gd" id="8_ucgf7"]
+[ext_resource type="AudioStream" uid="uid://buklk37wpn58g" path="res://less_is_store/clients/sounds/item_grab.ogg" id="14_yiqrc"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_afxei"]
 height = 55.0
@@ -149,6 +152,35 @@ tracks/3/keys = {
 "values": [0]
 }
 
+[sub_resource type="Animation" id="Animation_learf"]
+resource_name = "run"
+length = 0.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../Visuals/Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [1, 2]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("..:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
 [sub_resource type="Animation" id="Animation_6imxw"]
 resource_name = "stunned"
 length = 0.4
@@ -166,23 +198,6 @@ tracks/0/keys = {
 "values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0.392157)]
 }
 
-[sub_resource type="Animation" id="Animation_learf"]
-resource_name = "run"
-length = 0.2
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("../Visuals/Sprite2D:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [1, 2]
-}
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_poqhq"]
 _data = {
 "RESET": SubResource("Animation_a4w2d"),
@@ -192,80 +207,17 @@ _data = {
 "stunned": SubResource("Animation_6imxw")
 }
 
-[sub_resource type="Gradient" id="Gradient_7m4la"]
-offsets = PackedFloat32Array(0, 0.604762, 1)
-colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
-
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_88s5k"]
-gradient = SubResource("Gradient_7m4la")
-
 [sub_resource type="Curve" id="Curve_5lkdy"]
 _data = [Vector2(0, 0.0181818), 0.0, 0.0, 0, 0, Vector2(0.419087, 1), 0.0, 0.0, 0, 0, Vector2(0.502075, 1), 0.0, 0.0, 0, 0, Vector2(0.962656, 0), 0.0, 0.0, 0, 0]
 point_count = 4
 
-[sub_resource type="CurveTexture" id="CurveTexture_kl7bv"]
-curve = SubResource("Curve_5lkdy")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_156c4"]
-particle_flag_align_y = true
-particle_flag_disable_z = true
-spread = 180.0
-gravity = Vector3(0, 98, 0)
-initial_velocity_min = 300.0
-initial_velocity_max = 400.0
-orbit_velocity_min = 0.0
-orbit_velocity_max = 0.0
-scale_min = 0.4
-scale_max = 0.4
-scale_curve = SubResource("CurveTexture_kl7bv")
-color_ramp = SubResource("GradientTexture1D_88s5k")
-hue_variation_max = 1.0
+[sub_resource type="Gradient" id="Gradient_7m4la"]
+offsets = PackedFloat32Array(0, 0.604762, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
 
 [sub_resource type="Curve" id="Curve_3ptrd"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.701245, 0.990909), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
 point_count = 3
-
-[sub_resource type="CurveTexture" id="CurveTexture_m5itl"]
-curve = SubResource("Curve_3ptrd")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_6vifq"]
-particle_flag_disable_z = true
-direction = Vector3(0, -1, 0)
-gravity = Vector3(0, 900, 0)
-initial_velocity_min = 300.0
-initial_velocity_max = 400.0
-orbit_velocity_min = 0.0
-orbit_velocity_max = 0.0
-scale_min = 0.15
-scale_max = 0.15
-scale_curve = SubResource("CurveTexture_m5itl")
-
-[sub_resource type="Gradient" id="Gradient_3qgwn"]
-offsets = PackedFloat32Array(0.0142857, 0.0857143, 1)
-colors = PackedColorArray(1, 1, 1, 0.168627, 1, 1, 1, 1, 1, 1, 1, 0)
-
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_q6ami"]
-gradient = SubResource("Gradient_3qgwn")
-
-[sub_resource type="Curve" id="Curve_hgkev"]
-_data = [Vector2(0, 0.490909), 0.0, 3.22871, 0, 0, Vector2(0.178423, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="CurveTexture" id="CurveTexture_q8u4d"]
-curve = SubResource("Curve_hgkev")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_l6xfi"]
-particle_flag_disable_z = true
-spread = 180.0
-gravity = Vector3(0, -10, 0)
-initial_velocity_min = 5.0
-initial_velocity_max = 5.0
-orbit_velocity_min = 0.0
-orbit_velocity_max = 0.0
-scale_min = 0.1
-scale_max = 0.1
-scale_curve = SubResource("CurveTexture_q8u4d")
-color_ramp = SubResource("GradientTexture1D_q6ami")
 
 [node name="Client" type="CharacterBody2D" groups=["Clients"]]
 collision_mask = 2
@@ -290,25 +242,48 @@ libraries = {
 "": SubResource("AnimationLibrary_poqhq")
 }
 
-[node name="AudioPlayer" parent="State" instance=ExtResource("5_e3icu")]
-
-[node name="AppearParticles" type="GPUParticles2D" parent="State"]
+[node name="AppearParticles" type="CPUParticles2D" parent="State"]
 position = Vector2(0, -54)
 emitting = false
 amount = 24
-process_material = SubResource("ParticleProcessMaterial_156c4")
-texture = ExtResource("4_vmbl5")
 lifetime = 0.7
 one_shot = true
 explosiveness = 1.0
+fixed_fps = 30
+draw_order = 1
+texture = ExtResource("4_vmbl5")
+particle_flag_align_y = true
+spread = 180.0
+gravity = Vector2(0, 98)
+initial_velocity_min = 300.0
+initial_velocity_max = 400.0
+scale_amount_min = 0.4
+scale_amount_max = 0.4
+scale_amount_curve = SubResource("Curve_5lkdy")
+color_ramp = SubResource("Gradient_7m4la")
+hue_variation_max = 1.0
 
-[node name="CoinParticles" type="GPUParticles2D" parent="State"]
+[node name="CoinParticles" type="CPUParticles2D" parent="State"]
 position = Vector2(0, -145)
 emitting = false
-process_material = SubResource("ParticleProcessMaterial_6vifq")
-texture = ExtResource("5_d0pkr")
 lifetime = 0.6
 one_shot = true
+fixed_fps = 30
+draw_order = 1
+texture = ExtResource("5_d0pkr")
+direction = Vector2(0, -1)
+gravity = Vector2(0, 900)
+initial_velocity_min = 300.0
+initial_velocity_max = 400.0
+scale_amount_min = 0.15
+scale_amount_max = 0.15
+scale_amount_curve = SubResource("Curve_3ptrd")
+
+[node name="AudioPlayerCoins" type="AudioStreamPlayer2D" parent="State"]
+stream = ExtResource("5_63wt3")
+
+[node name="AudioPlayerLeave" type="AudioStreamPlayer2D" parent="State"]
+stream = ExtResource("5_hwucn")
 
 [node name="PathWalker" type="Node2D" parent="."]
 script = ExtResource("2_5v3iy")
@@ -318,7 +293,6 @@ script = ExtResource("2_5v3iy")
 [node name="WalkParticles" parent="PathWalker" instance=ExtResource("5_vo6lv")]
 position = Vector2(0, -23)
 amount = 2
-process_material = SubResource("ParticleProcessMaterial_l6xfi")
 
 [node name="Visuals" type="Node2D" parent="."]
 script = ExtResource("8_ucgf7")
@@ -337,7 +311,8 @@ script = ExtResource("6_ek4iu")
 
 [node name="Container" type="Node2D" parent="Backpack/IngredientList"]
 
-[node name="AudioPlayer" parent="Backpack" instance=ExtResource("5_e3icu")]
+[node name="AudioPlayer" type="AudioStreamPlayer2D" parent="Backpack"]
+stream = ExtResource("14_yiqrc")
 
 [node name="Knockback" type="Node2D" parent="."]
 script = ExtResource("7_a68jm")

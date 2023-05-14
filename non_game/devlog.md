@@ -1,5 +1,8 @@
 ---
-title: "Less is Store"
+title: 'Less is Store'
+tags: ["devlog", "technical devlog", "jam"]
+date: 2023-05-13 14:00:00
+emoji: "🛍️"
 ---
 
 Welcome to the devlog for "Less is Store" (@TODO: link). This game was created for the GoGodot Jam (iteration 4).
@@ -197,7 +200,11 @@ And that's the whole devlog!
 
 As I said, I only had about 3 or 4 days for this. I also hadn't used Godot in a year, and certainly not the latest and greatest 4.0 version, which is why I kept the idea very minimal. And I'm happy most of it just worked out first try, because I wouldn't have had time to fix any serious roadblocks :p
 
-I really feel like Godot is hitting its stride now. The 4.0 version is _amazing_ in terms of improvements, features, engine size ( = how fast it loads, how small it is), reliability. Yes, there are still some major bugs or missing parts, but those will come in 4.1. Creating this game for the jam ... has given me back some motivation to make a game again. To make a _serious_ game, which I can release professionally, with the current state of Godot Engine.
+I really feel like Godot is hitting its stride now. The 4.0 version is _amazing_ in terms of improvements, features, engine size ( = how fast it loads, how small it is), reliability. Creating this game for the jam ... has given me back some motivation to make a game again. To make a _serious_ game, which I can release professionally, with the current state of Godot Engine.
+
+Yes, there are still some major bugs or missing parts. (The developers are aware and they're coming in 4.1 or 4.2.) Last minute, I had to completely redo all my Audio code because some feature just _did not work at all_ and almost no information about that was available. (For those interested: at the moment, you can't set the AudioPlayer `stream` property through code, it just won't work on most exported platforms.)
+
+Similarly, I had to convert all my `GPUParticles` to `CPUParticles` last minute. A conversion that went only 95% smoothly. Godot still has some clear roadblocks, but once those are gone, this is an engine I can see myself using for more and bigger games in the future. 
 
 I might create and publish my other idea for the jam at some later stage. It was similarly tiny, but I suspect it might work just as well. (The basic mechanics are similar, as they were obviously both conceived for the same jam.)
 

@@ -7,11 +7,11 @@ var max_content : int = 1
 @onready var ingredient_list = $IngredientList
 const SIZE_BOUNDS = { "min": 1, "max": 4 }
 
-const AUDIO_CONFIG = { "dir": "res://less_is_store/clients/sounds/", "volume": -6 }
+#const AUDIO_CONFIG = { "dir": "res://less_is_store/clients/sounds/", "volume": -6 }
 @onready var audio_player = $AudioPlayer
 
 func activate():
-	audio_player.activate(AUDIO_CONFIG)
+	#audio_player.activate(AUDIO_CONFIG)
 	
 	body.connect("removed", on_removed)
 	
@@ -28,7 +28,7 @@ func add(data):
 	if is_full(): return
 	content.append(data)
 	body.give_feedback("Grabbed!")
-	audio_player.play_from_list(["item_grab"])
+	audio_player.play()
 	update_visuals()
 
 func remove_by_index(idx):

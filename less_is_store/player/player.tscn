@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://bnya71jmxepul"]
+[gd_scene load_steps=23 format=3 uid="uid://bnya71jmxepul"]
 
 [ext_resource type="Script" path="res://less_is_store/player/player.gd" id="1_ud6al"]
 [ext_resource type="Script" path="res://less_is_store/player/mover.gd" id="3_dd3pc"]
@@ -6,7 +6,11 @@
 [ext_resource type="PackedScene" uid="uid://bghfeuiwyjmlf" path="res://less_is_store/tools/audio_player/audio_player.tscn" id="4_e14l8"]
 [ext_resource type="PackedScene" uid="uid://c6wt2xsgxkdh6" path="res://less_is_store/tools/shadow_locator/shadow_locator.tscn" id="4_ugcqr"]
 [ext_resource type="Script" path="res://less_is_store/player/powerups.gd" id="5_fkcds"]
+[ext_resource type="AudioStream" uid="uid://72he1jmh1jsw" path="res://less_is_store/player/sounds/client_hit.ogg" id="6_d5ty2"]
+[ext_resource type="AudioStream" uid="uid://bvawxgxhu2hmg" path="res://less_is_store/player/sounds/destruct.ogg" id="7_55eqs"]
+[ext_resource type="AudioStream" uid="uid://bstrutqom467b" path="res://less_is_store/player/sounds/powerup_1.ogg" id="7_g5637"]
 [ext_resource type="Texture2D" uid="uid://c8j7fiofwrutj" path="res://less_is_store/player/player.webp" id="8_8cn36"]
+[ext_resource type="AudioStream" uid="uid://ssxjwl64j33a" path="res://less_is_store/player/sounds/dash_1.ogg" id="8_cvmkm"]
 [ext_resource type="Texture2D" uid="uid://bmts3ywcqxbhu" path="res://less_is_store/player/player_afterimage.webp" id="8_qgsto"]
 [ext_resource type="Script" path="res://less_is_store/player/visuals.gd" id="8_tavc0"]
 
@@ -19,29 +23,13 @@ size = Vector2(86, 120)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n18gi"]
 size = Vector2(72, 32)
 
-[sub_resource type="Gradient" id="Gradient_25870"]
-offsets = PackedFloat32Array(0.0428571, 1)
-colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
-
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_ileng"]
-gradient = SubResource("Gradient_25870")
-
 [sub_resource type="Curve" id="Curve_p27yc"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.887967, 0.863636), -0.417316, -0.417316, 0, 0, Vector2(0.991701, 0), -4.12407, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="CurveTexture" id="CurveTexture_jrej2"]
-curve = SubResource("Curve_p27yc")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_6l31q"]
-particle_flag_disable_z = true
-gravity = Vector3(0, 0, 0)
-orbit_velocity_min = 0.0
-orbit_velocity_max = 0.0
-scale_min = 0.4
-scale_max = 0.4
-scale_curve = SubResource("CurveTexture_jrej2")
-color_ramp = SubResource("GradientTexture1D_ileng")
+[sub_resource type="Gradient" id="Gradient_25870"]
+offsets = PackedFloat32Array(0.0428571, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
 [sub_resource type="Animation" id="Animation_l8ljw"]
 length = 0.001
@@ -127,22 +115,36 @@ shape = SubResource("RectangleShape2D_n18gi")
 
 [node name="AudioWalk" parent="Mover" instance=ExtResource("4_e14l8")]
 
-[node name="AudioDash" parent="Mover" instance=ExtResource("4_e14l8")]
-
 [node name="WalkParticles" parent="Mover" instance=ExtResource("4_6xon5")]
 
-[node name="DashParticles" type="GPUParticles2D" parent="Mover"]
+[node name="DashParticles" type="CPUParticles2D" parent="Mover"]
 position = Vector2(0, -79)
 amount = 24
-process_material = SubResource("ParticleProcessMaterial_6l31q")
-texture = ExtResource("8_qgsto")
 lifetime = 0.35
 randomness = 0.2
+fixed_fps = 30
+draw_order = 1
+texture = ExtResource("8_qgsto")
+gravity = Vector2(0, 0)
+scale_amount_min = 0.4
+scale_amount_max = 0.4
+scale_amount_curve = SubResource("Curve_p27yc")
+color_ramp = SubResource("Gradient_25870")
+
+[node name="AudioPlayerHit" type="AudioStreamPlayer2D" parent="Mover"]
+stream = ExtResource("6_d5ty2")
+
+[node name="AudioPlayerDestruct" type="AudioStreamPlayer2D" parent="Mover"]
+stream = ExtResource("7_55eqs")
+
+[node name="AudioPlayerDash" type="AudioStreamPlayer2D" parent="Mover"]
+stream = ExtResource("8_cvmkm")
 
 [node name="Powerups" type="Node2D" parent="."]
 script = ExtResource("5_fkcds")
 
-[node name="AudioPlayer" parent="Powerups" instance=ExtResource("4_e14l8")]
+[node name="AudioPlayer" type="AudioStreamPlayer2D" parent="Powerups"]
+stream = ExtResource("7_g5637")
 
 [node name="ShadowLocator" parent="." instance=ExtResource("4_ugcqr")]
 

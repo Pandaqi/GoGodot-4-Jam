@@ -15,6 +15,8 @@ const LOSS_IMAGE = "loss"
 const DEBUG_DURATION_SCALE : float = 1.0 #DEBUGGING; should be 1
 const DEBUG_NO_IMAGES : bool = false #DEBUGGING; should be false
 const DEBUG_GAME_OVER : bool = false #DEBUGGING; should be false
+const DEBUG_TEST_TYPES : Array = [] # DEBUGGING: should be empty
+const DEBUG_STORE_EMPTY : bool = false #DEBUGGING; should be false
 
 @onready var tut_img : TextureRect = $Control/MarginContainer/Tutorial
 @onready var timer : Timer = $Timer
@@ -107,6 +109,9 @@ func add_stage_properties_to_cfg():
 	var new_cfg = get_stage_data()
 	for key in new_cfg:
 		GDict.cfg[key] = new_cfg[key]
+	
+	if DEBUG_TEST_TYPES.size() > 0:
+		GDict.cfg.client_types = DEBUG_TEST_TYPES
 
 func enable():
 	active = true
@@ -128,13 +133,22 @@ func restart_timer():
 func is_busy() -> bool:
 	return anim_player.is_playing()
 
+func debug_delete_all_cells():
+	var cells = main_node.get_mod("map").get_cells_of_type(Enums.CellType.BUYABLE)
+	for c in cells:
+		c.visual.change_to_empty()
+
 func _input(ev):
 	if not active: return
 	if is_busy(): return
 	
-	if DEBUG_GAME_OVER:
-		if ev.is_action_released("ui_accept"):
+	if ev.is_action_released("ui_accept"):
+		if DEBUG_GAME_OVER:
 			goto_game_over(true)
+			return
+		
+		if DEBUG_STORE_EMPTY:
+			debug_delete_all_cells()
 			return
 	
 	if ev.is_action_released("ui_accept"):
@@ -147,6 +161,7 @@ func restart():
 	get_tree().reload_current_scene()
 
 func _on_timer_timeout():
+	if game_over: return
 	load_next_stage()
 
 func get_factor():
